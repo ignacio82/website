@@ -1,0 +1,47 @@
+---
+title: "Ignacio Martinez, PhD"
+description-meta: "Head of Impact Measurement at YouTube"
+image: "img/ignacio_martinez.webp"
+page-navigation: false
+toc: false
+#sidebar: false
+page-layout: full
+
+about:
+  id: hero-heading
+  template: trestles
+  image-width: 70%
+  links:
+    - icon: envelope
+      text: E-mail
+      href: mailto:ignacio@martinez.fyi
+    - icon: mastodon
+      text: Mastodon
+      href: https://mastodon.social/@ignacio  
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/ignacio82/
+      target: _blank
+
+
+listing:
+  - id: recent-posts
+    contents: 
+      - posts
+      - posts/post-links.yml
+    type: grid
+    max-items: 3
+#    image-height: 150px
+    page-size: 3 #set same as max-times to remove the page number setting
+    fields: [image, date, title, author, description]
+    max-description-length: 75
+    sort: 
+      - "date desc"
+      - "title asc"
+---
+
+<link rel="me" href="https://mastodon.social/@ignacio">
+
+:::{#hero-heading}
+
+Ignacio is bla bla bla

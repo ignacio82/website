@@ -1,0 +1,33 @@
+project:
+  type: website
+  output-dir: docs
+  
+website:
+  title: "Dr. Ignacio Martinez"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+        icon: house
+      - icon: book
+        text: Book
+        href: https://book.martinez.fyi
+        target: _blank
+      - icon: file-earmark-person
+        text: CV
+        href: Ignacio-Martinez-CV.pdf
+        target: _blank
+      - text: "{{< ai google-scholar >}} Google Scholar"
+        href: https://scholar.google.com/citations?user=Kq8kZToAAAAJ
+        target: _blank        
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+editor: visual
+
+resources:
+  - CNAME
+  - Ignacio-Martinez-CV.pdf
