@@ -22,7 +22,8 @@ about:
       text: LinkedIn
       href: https://www.linkedin.com/in/ignacio82/
       target: _blank
-
+subtitle: | 
+    **Citizenship:** {{< iconify emojione-v1:flag-for-argentina >}} {{< iconify emojione-v1:flag-for-united-states >}}
 
 listing:
   - id: recent-posts
@@ -42,6 +43,8 @@ listing:
 
 <link rel="me" href="https://mastodon.social/@ignacio">
 
+
+
 :::{#hero-heading}
 
-Ignacio is bla bla bla
+I'm Ignacio, and I lead impact measurement at YouTube. I'm passionate about using data to drive informed business decisions and contribute to YouTube's success. I earned my PhD in Economics from the University of Virginia, and prior to joining Google in 2019, I was a researcher at Mathematica.org where I helped policymakers use data to inform decisions related to education and health policy. My journey at Google began on the Chief Economist's team. Now at YouTube, I lead a team tasked with driving critical business decisions by measuring the impact of the YouTube Biz Org's programs and activities.
