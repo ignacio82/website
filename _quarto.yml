@@ -25,7 +25,9 @@ format:
     theme: cosmo
     css: styles.css
     toc: true
-
+    include-in-header:
+      text: |
+        <script defer src="https://umami.martinez.fyi/script.js" data-website-id="0805cacb-45a2-4531-8e52-728ba246c576"></script>
 editor: visual
 
 resources:
