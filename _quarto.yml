@@ -4,6 +4,7 @@ project:
   
 website:
   title: "Dr. Ignacio Martinez"
+  favicon: img/favicon.png
   navbar:
     left:
       - href: index.qmd
