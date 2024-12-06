@@ -2,6 +2,7 @@
 title: "Ignacio Martinez, PhD"
 description-meta: "Head of Impact Measurement at YouTube"
 image: "img/ignacio_martinez.webp"
+image-alt: "A photo of Ignacio Martinez"
 page-navigation: false
 toc: false
 #sidebar: false
