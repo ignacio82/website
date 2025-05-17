@@ -19,7 +19,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem; /* Adjusted gap slightly */
             min-height: 100vh;
             margin: 0;
             background: var(--pink-light);
@@ -29,9 +29,9 @@
             transition: background-color 0.5s;
         }
         h1 {
-             margin: 0.2em 0 0;
-             font-size: 3rem;
-             text-shadow: 2px 2px rgba(0,0,0,0.1);
+            margin: 0.2em 0 0;
+            font-size: 3rem;
+            text-shadow: 2px 2px rgba(0,0,0,0.1);
             animation: bounce 2s infinite alternate;
         }
         @keyframes bounce {
@@ -39,9 +39,9 @@
             100% { transform: translateY(-10px); }
         }
         #status {
-             font-size: 1.6rem;
-             min-height: 2.2rem;
-             text-align: center;
+            font-size: 1.6rem;
+            min-height: 2.2rem;
+            text-align: center;
             transition: transform 0.3s;
         }
         #status.highlight {
@@ -76,12 +76,16 @@
             position: relative;
             overflow: hidden;
         }
-        .cell:hover {
-             background: var(--pink-light);
-             transform: translateY(-3px);
+        .cell:hover:not(.disabled) { /* Only apply hover effects if not disabled */
+            background: var(--pink-light);
+            transform: translateY(-3px);
             box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
-        .cell.disabled { cursor: default; }
+        .cell.disabled {
+            cursor: default;
+            /* Optionally, slightly different style for disabled cells */
+            /* opacity: 0.7; */
+        }
         .cell span {
             display: inline-block;
             transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
@@ -125,9 +129,26 @@
                 opacity: 0;
             }
         }
-        .controls, .mode, .difficulty {
-            display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
-            margin-top: 5px;
+        .controls-group { /* Wrapper for control sections */
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* Spacing between control groups like mode, difficulty, etc. */
+            align-items: center; /* This will center the .game-start-options div if its width is not 100% */
+            width: 100%; /* Make the group take full width to center its content lines */
+            padding: 0 10px; /* Add some padding so content doesn't touch edges */
+        }
+        .mode, .difficulty, .game-start-options, .controls {
+            display: flex;
+            flex-wrap: wrap; /* Allows items to wrap if not enough space */
+            gap: 10px;
+            justify-content: center; /* Center the items within this flex container */
+            align-items: center; /* Vertically align items in the line */
+            width: 100%; /* Make each control line take full width to allow its content to be centered */
+        }
+         .game-start-options span { /* The "Quién empieza:" label */
+            font-size: 1rem;
+            margin-right: 8px; /* Add a little space between the label and the first button */
+            white-space: nowrap; /* Prevent the label from wrapping */
         }
         button {
             padding: 10px 22px;
@@ -143,23 +164,26 @@
         }
         button:hover { background: var(--pink-dark); transform: translateY(-2px); }
         button:active { transform: translateY(0); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-        button.mode-btn.active, button.difficulty-btn.active {
-             outline: 3px solid var(--pink-dark);
-             background: var(--pink-dark);
+
+        button.mode-btn.active,
+        button.difficulty-btn.active,
+        button.start-option-btn.active { /* Combined active styles */
+            outline: 3px solid var(--pink-dark);
+            background: var(--pink-dark);
         }
         #results {
-             font-size: 1.2rem;
-             text-align: center;
-             margin-top: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-top: 10px;
             background: white;
             padding: 8px 15px;
             border-radius: var(--border-radius);
             border: 2px dashed var(--pink);
         }
         #results span {
-             display: inline-block;
-             min-width: 2ch;
-             font-weight: bold;
+            display: inline-block;
+            min-width: 2ch;
+            font-weight: bold;
         }
         .theme-toggle {
             position: absolute;
@@ -184,13 +208,16 @@
             border-color: #5a5a5a;
             color: white;
         }
-        body.dark-theme .cell:hover {
+        body.dark-theme .cell:hover:not(.disabled) {
             background: #5a5a5a;
         }
         body.dark-theme #results {
             background: #3d3d3d;
             border-color: var(--pink-dark);
             color: white;
+        }
+        body.dark-theme .game-start-options span {
+            color: var(--pink-light);
         }
         .sound-toggle {
             position: absolute;
@@ -202,15 +229,35 @@
             cursor: pointer;
             padding: 5px;
         }
-        @media (max-width: 400px) {
+        @media (max-width: 480px) { /* Slightly adjusted breakpoint */
+            body { gap: 0.5rem; }
             h1 { font-size: 2.5rem; }
             #game {
                 grid-template-columns: repeat(3, 70px);
                 grid-template-rows: repeat(3, 70px);
+                gap: 5px;
             }
             .cell {
                 width: 70px; height: 70px;
                 font-size: 2.5rem;
+            }
+            button { padding: 8px 15px; font-size: 0.9rem;}
+            .controls-group {
+                 padding: 0 5px; /* Reduce padding slightly on small screens */
+            }
+            .mode, .difficulty, .game-start-options, .controls {
+                 gap: 8px;
+            }
+            .game-start-options span {
+                 /* On very small screens, if label still causes awkward wrapping with buttons,
+                    you could make it display block and center text, then buttons wrap below.
+                    Example:
+                    display: block;
+                    width: 100%;
+                    text-align: center;
+                    margin-bottom: 5px;
+                    margin-right: 0;
+                 */
             }
         }
     </style>
@@ -232,19 +279,29 @@
         <div class="cell" role="button" aria-label="Celda 8" data-index="7"><span></span></div>
         <div class="cell" role="button" aria-label="Celda 9" data-index="8"><span></span></div>
     </div>
-    <div class="mode" aria-label="Seleccionar modo">
-        <button id="pvpBtn" class="mode-btn active">Jugador vs Jugador</button>
-        <button id="cpuBtn" class="mode-btn">Jugador vs CPU</button>
+
+    <div class="controls-group">
+        <div class="mode" aria-label="Seleccionar modo">
+            <button id="pvpBtn" class="mode-btn active">Jugador vs Jugador</button>
+            <button id="cpuBtn" class="mode-btn">Jugador vs CPU</button>
+        </div>
+        <div class="difficulty" aria-label="Seleccionar dificultad" style="display: none;">
+            <button id="easyBtn" class="difficulty-btn">Fácil</button>
+            <button id="mediumBtn" class="difficulty-btn active">Normal</button>
+            <button id="hardBtn" class="difficulty-btn">Difícil</button>
+        </div>
+        <div class="game-start-options" aria-label="Seleccionar quién empieza">
+            <span>Quién empieza:</span>
+            <button id="player1StartsBtn" class="start-option-btn">Jugador 1</button>
+            <button id="randomStartsBtn" class="start-option-btn">Aleatorio</button>
+            <button id="loserStartsBtn" class="start-option-btn">Perdedor</button>
+        </div>
+        <div class="controls">
+            <button id="restartBtn">Reiniciar</button>
+            <button id="changeSymbolsBtn">Cambiar símbolos</button>
+        </div>
     </div>
-    <div class="difficulty" aria-label="Seleccionar dificultad" style="display: none;">
-        <button id="easyBtn" class="difficulty-btn">Fácil</button>
-        <button id="mediumBtn" class="difficulty-btn active">Normal</button>
-        <button id="hardBtn" class="difficulty-btn">Difícil</button>
-    </div>
-    <div class="controls">
-        <button id="restartBtn">Reiniciar</button>
-        <button id="changeSymbolsBtn">Cambiar símbolos</button>
-    </div>
+
     <div id="results">
         🦄 <span id="unicornWins">0</span> – ❤️ <span id="heartWins">0</span> – 🤝 <span id="draws">0</span>
     </div>
@@ -267,6 +324,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const soundToggle = document.getElementById('soundToggle');
     const changeSymbolsBtn = document.getElementById('changeSymbolsBtn');
 
+    // New "Who Goes First" Buttons
+    const player1StartsBtn = document.getElementById('player1StartsBtn');
+    const randomStartsBtn = document.getElementById('randomStartsBtn');
+    const loserStartsBtn = document.getElementById('loserStartsBtn');
+
     let board, currentPlayer, gameActive, vsCPU, difficulty;
     let soundEnabled = true;
     let symbolSet = [
@@ -282,7 +344,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let heartWins = +localStorage.getItem('heartWins') || 0;
     let draws = +localStorage.getItem('draws') || 0;
 
-    // ======== AudioContext Management (Improved) =========
+    // New state for "Who Goes First"
+    let whoGoesFirstSetting = localStorage.getItem('whoGoesFirstSetting') || 'player1'; // 'player1', 'random', 'loser'
+    let lastWinner = null; // null, currentSymbols.player1, currentSymbols.player2
+    let previousGameExists = false; // To handle "loser first" on the very first game
+
+    // ======== AudioContext Management =========
     let audioCtx;
     function getAudioContext() {
         if (!audioCtx) {
@@ -290,65 +357,76 @@ document.addEventListener('DOMContentLoaded', () => {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {
                 console.error("AudioContext not supported or could not be created.", e);
-                soundEnabled = false; // Disable sound if context fails
-                soundToggle.textContent = '🔇';
-                localStorage.setItem('soundDisabled', true);
-                return null;
+                soundEnabled = false; soundToggle.textContent = '🔇'; localStorage.setItem('soundDisabled', true); return null;
             }
         }
-        // Check if context is suspended (e.g., due to autoplay policies)
         if (audioCtx && audioCtx.state === 'suspended') {
             audioCtx.resume().catch(err => {
                 console.error("Failed to resume AudioContext. Disabling sound.", err);
-                soundEnabled = false;
-                soundToggle.textContent = '🔇';
-                localStorage.setItem('soundDisabled', true);
+                soundEnabled = false; soundToggle.textContent = '🔇'; localStorage.setItem('soundDisabled', true);
             });
         }
         return audioCtx;
     }
 
-
     // Load theme preference
     const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
-    if (isDarkTheme) {
-        document.body.classList.add('dark-theme');
-        themeToggle.textContent = '☀️';
-    }
+    if (isDarkTheme) { document.body.classList.add('dark-theme'); themeToggle.textContent = '☀️'; }
 
     // Load sound preference
     const isSoundDisabled = localStorage.getItem('soundDisabled') === 'true';
-    if (isSoundDisabled) {
-        soundEnabled = false;
-        soundToggle.textContent = '🔇';
-    }
+    if (isSoundDisabled) { soundEnabled = false; soundToggle.textContent = '🔇'; }
 
     const winningCombos = [
-        [0,1,2],[3,4,5],[6,7,8],
-        [0,3,6],[1,4,7],[2,5,8],
-        [0,4,8],[2,4,6]
+        [0,1,2],[3,4,5],[6,7,8], [0,3,6],[1,4,7],[2,5,8], [0,4,8],[2,4,6]
     ];
 
-    // ========= Inicialización =========
-    updateScoreboard();
-    init(); // Initial game setup
+    function setBoardClickable(clickable) {
+        cells.forEach(cellNode => {
+            if (clickable) {
+                if (!board[cellNode.dataset.index]) { // Only enable empty cells
+                    cellNode.classList.remove('disabled');
+                }
+            } else {
+                cellNode.classList.add('disabled');
+            }
+        });
+    }
 
-    function init(mode = 'pvp', diff = 'medium') {
+    // ========= Inicialización =========
+    function init(mode = vsCPU ? 'cpu' : 'pvp', diff = difficulty || 'medium') {
         removeConfetti();
         board = Array(9).fill(null);
-        currentPlayer = currentSymbols.player1;
-        gameActive = true;
         vsCPU = mode === 'cpu';
         difficulty = diff;
 
+        let initialPlayer;
+        switch (whoGoesFirstSetting) {
+            case 'random':
+                initialPlayer = Math.random() < 0.5 ? currentSymbols.player1 : currentSymbols.player2;
+                break;
+            case 'loser':
+                if (!previousGameExists || lastWinner === null) { // First game ever, or last game was a draw/tie
+                    initialPlayer = currentSymbols.player1; // Default to P1
+                } else if (lastWinner === currentSymbols.player1) {
+                    initialPlayer = currentSymbols.player2;
+                } else { // lastWinner was currentSymbols.player2
+                    initialPlayer = currentSymbols.player1;
+                }
+                break;
+            case 'player1':
+            default:
+                initialPlayer = currentSymbols.player1;
+                break;
+        }
+        currentPlayer = initialPlayer;
+        gameActive = true;
+
         cells.forEach(c => {
-            if (c && c.querySelector('span')) { // Add null check for robustness
-                c.querySelector('span').textContent = '';
-            }
-            if (c) { // Add null check
-                 c.classList.remove('rainbow', 'disabled', 'mark-animation');
-            }
+            if (c && c.querySelector('span')) { c.querySelector('span').textContent = ''; }
+            if (c) { c.classList.remove('rainbow', 'mark-animation'); } // Keep 'disabled' status managed by setBoardClickable
         });
+        setBoardClickable(true); // Enable by default, then disable if CPU starts
 
         statusDiv.textContent = `Turno del ${getPlayerName(currentPlayer)}`;
         statusDiv.classList.add('highlight');
@@ -357,26 +435,29 @@ document.addEventListener('DOMContentLoaded', () => {
         updateModeButtons();
         difficultyDiv.style.display = vsCPU ? 'flex' : 'none';
         updateDifficultyButtons();
+        updateWhoGoesFirstButtons(); // Ensure "who goes first" buttons are correctly highlighted
 
         const gameBoard = document.getElementById('game');
         gameBoard.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            gameBoard.style.transform = '';
-        }, 200);
+        setTimeout(() => { gameBoard.style.transform = ''; }, 200);
 
         playSound('reset');
+
+        if (vsCPU && currentPlayer === currentSymbols.player2 && gameActive) {
+            setBoardClickable(false); // CPU is starting, make board unclickable
+            setTimeout(() => {
+                cpuMove();
+                if (gameActive) { // Make board clickable after CPU's first move, if game not ended
+                    setBoardClickable(true);
+                }
+            }, 700);
+        }
     }
 
     function getPlayerName(symbol) {
-        if (symbol === currentSymbols.player1) {
-            return `${symbol} ${symbol === '🦄' ? 'Unicornio' :
-                                symbol === '🐱' ? 'Gatito' :
-                                symbol === '🌞' ? 'Sol' : 'Equis'}`;
-        } else {
-            return `${symbol} ${symbol === '❤️' ? 'Corazón' :
-                                symbol === '🐶' ? 'Perrito' :
-                                symbol === '🌙' ? 'Luna' : 'Círculo'}`;
-        }
+        const player1Name = symbol === '🦄' ? 'Unicornio' : symbol === '🐱' ? 'Gatito' : symbol === '🌞' ? 'Sol' : 'Equis';
+        const player2Name = symbol === '❤️' ? 'Corazón' : symbol === '🐶' ? 'Perrito' : symbol === '🌙' ? 'Luna' : 'Círculo';
+        return symbol === currentSymbols.player1 ? `${symbol} ${player1Name}` : `${symbol} ${player2Name}`;
     }
 
     function updateModeButtons() {
@@ -390,81 +471,75 @@ document.addEventListener('DOMContentLoaded', () => {
         hardBtn.classList.toggle('active', difficulty === 'hard');
     }
 
+    function updateWhoGoesFirstButtons() {
+        player1StartsBtn.classList.toggle('active', whoGoesFirstSetting === 'player1');
+        randomStartsBtn.classList.toggle('active', whoGoesFirstSetting === 'random');
+        loserStartsBtn.classList.toggle('active', whoGoesFirstSetting === 'loser');
+    }
+
     // ========= Lógica del juego =========
     function handleCellClick(e) {
-        if (!e.currentTarget || typeof e.currentTarget.dataset === 'undefined') {
-            console.error('Error: Click target is invalid or missing dataset.', e.target);
-            return;
-        }
-        const idxStr = e.currentTarget.dataset.index;
-        if (typeof idxStr === 'undefined') {
-            console.error('Error: data-index attribute is missing on clicked cell.', e.currentTarget);
-            return;
-        }
+        const cellElement = e.currentTarget;
+        if (!cellElement || typeof cellElement.dataset === 'undefined') return;
+        const idxStr = cellElement.dataset.index;
+        if (typeof idxStr === 'undefined') return;
         const idx = +idxStr;
+        if (isNaN(idx)) return;
 
-        if (isNaN(idx)) {
-            console.error('Error: Parsed index is NaN. data-index value:', idxStr, e.currentTarget);
-            return;
-        }
-
-        if (!gameActive || board[idx] !== null) { // Explicitly check for null
-            return;
-        }
+        if (!gameActive || board[idx] !== null || cellElement.classList.contains('disabled')) return;
 
         makeMove(idx, currentPlayer);
-        const winInfo = checkWin(currentPlayer); // Renamed from 'win' to avoid conflict with window.win
+        const winInfo = checkWin(currentPlayer);
 
         if (winInfo) return endGame(currentPlayer, winInfo);
         if (checkDraw()) return endDraw();
 
         switchPlayer();
         if (vsCPU && currentPlayer === currentSymbols.player2 && gameActive) {
-            setTimeout(cpuMove, 700);
+            setBoardClickable(false); // Human just moved, now CPU's turn, disable board
+            setTimeout(() => {
+                cpuMove();
+                if (gameActive) { // Re-enable board if game didn't end
+                    setBoardClickable(true);
+                }
+            }, 700);
         }
     }
 
     function makeMove(idx, player) {
         board[idx] = player;
         const cell = cells[idx];
-        if (!cell) { // Defensive check
-            console.error("Error: Cell not found at index", idx);
-            return;
-        }
+        if (!cell) return;
         const span = cell.querySelector('span');
-        if (!span) { // Defensive check
-            console.error("Error: Span not found in cell at index", idx, cell);
-            return;
-        }
+        if (!span) return;
         span.textContent = player;
-
-        cell.classList.add('disabled', 'mark-animation');
+        cell.classList.add('disabled', 'mark-animation'); // Mark cell as used and disabled
         setTimeout(() => cell.classList.remove('mark-animation'), 300);
-
         playSound('move');
     }
 
     function cpuMove() {
+        if (!gameActive) return; // Ensure game is active before CPU moves
         let idx;
         switch(difficulty) {
-            case 'easy':
-                idx = randomMove();
-                break;
-            case 'medium':
-                idx = Math.random() < 0.7 ? bestMove() : randomMove();
-                break;
-            case 'hard':
-            default:
-                idx = bestMove();
-                break;
+            case 'easy': idx = randomMove(); break;
+            case 'medium': idx = Math.random() < 0.7 ? bestMove() : randomMove(); break;
+            case 'hard': default: idx = bestMove(); break;
         }
-        if (idx === undefined || idx === null) return;
+        if (idx === undefined || idx === null || board[idx] !== null) { // Double check if cell is available
+             // Fallback if bestMove/randomMove somehow failed or picked a taken cell
+            idx = randomMove();
+            if (idx === null) { // No moves left, should be a draw but handle defensively
+                if(checkDraw()) endDraw();
+                return;
+            }
+        }
 
         makeMove(idx, currentSymbols.player2);
         const winInfo = checkWin(currentSymbols.player2);
         if (winInfo) return endGame(currentSymbols.player2, winInfo);
         if (checkDraw()) return endDraw();
-        switchPlayer();
+        switchPlayer(); // Switch back to human player
     }
 
     function randomMove() {
@@ -473,58 +548,54 @@ document.addEventListener('DOMContentLoaded', () => {
         return available[Math.floor(Math.random() * available.length)];
     }
 
-    function bestMove() {
-        let bestScore = -Infinity, move;
+    function bestMove() { // Minimax implementation as before
+        // Check if CPU can win in one move
         for (let i = 0; i < board.length; i++) {
             if (!board[i]) {
                 board[i] = currentSymbols.player2;
-                if (checkWin(currentSymbols.player2)) {
-                    board[i] = null;
-                    return i;
-                }
+                if (checkWin(currentSymbols.player2)) { board[i] = null; return i; }
                 board[i] = null;
             }
         }
+        // Check if player can win in one move (block)
         for (let i = 0; i < board.length; i++) {
             if (!board[i]) {
                 board[i] = currentSymbols.player1;
-                if (checkWin(currentSymbols.player1)) {
-                    board[i] = null;
-                    return i;
-                }
+                if (checkWin(currentSymbols.player1)) { board[i] = null; return i; }
                 board[i] = null;
             }
         }
-        board.forEach((v, i) => {
-            if (!v) {
+        // Minimax logic (simplified for brevity, use your existing robust one)
+        let bestScore = -Infinity;
+        let move;
+        for (let i = 0; i < board.length; i++) {
+            if (!board[i]) {
                 board[i] = currentSymbols.player2;
-                const score = minimax(board, 0, false);
+                let score = minimax(board, 0, false);
                 board[i] = null;
                 if (score > bestScore) {
-                     bestScore = score;
-                     move = i;
-                 }
+                    bestScore = score;
+                    move = i;
+                }
             }
-        });
-        return move !== undefined ? move : randomMove(); // Fallback if no best move found
+        }
+        return move !== undefined ? move : randomMove();
     }
 
-    function minimax(currentBoard, depth, isMaximizing) { // Renamed board to currentBoard
-        const cpuWin = checkWin(currentSymbols.player2, currentBoard); // Pass board
-        const playerWin = checkWin(currentSymbols.player1, currentBoard); // Pass board
-
+    function minimax(currentBoard, depth, isMaximizing) {
+        const cpuWin = checkWin(currentSymbols.player2, currentBoard);
+        const playerWin = checkWin(currentSymbols.player1, currentBoard);
         if (cpuWin) return 10 - depth;
         if (playerWin) return depth - 10;
-        if (checkDraw(currentBoard)) return 0; // Pass board
+        if (checkDraw(currentBoard)) return 0;
 
         if (isMaximizing) {
             let bestScore = -Infinity;
             for (let i = 0; i < currentBoard.length; i++) {
                 if (!currentBoard[i]) {
                     currentBoard[i] = currentSymbols.player2;
-                    const score = minimax(currentBoard, depth + 1, false);
+                    bestScore = Math.max(bestScore, minimax(currentBoard, depth + 1, false));
                     currentBoard[i] = null;
-                    bestScore = Math.max(bestScore, score);
                 }
             }
             return bestScore;
@@ -533,57 +604,53 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 0; i < currentBoard.length; i++) {
                 if (!currentBoard[i]) {
                     currentBoard[i] = currentSymbols.player1;
-                    const score = minimax(currentBoard, depth + 1, true);
+                    bestScore = Math.min(bestScore, minimax(currentBoard, depth + 1, true));
                     currentBoard[i] = null;
-                    bestScore = Math.min(bestScore, score);
                 }
             }
             return bestScore;
         }
     }
 
-    function checkWin(player, currentBoard = board) { // Added currentBoard param, default to global board
+    function checkWin(player, currentBoard = board) {
         for (const combo of winningCombos) {
-            const [a, b, c] = combo;
-            if (currentBoard[a] === player && currentBoard[b] === player && currentBoard[c] === player) {
-                return combo;
-            }
+            if (combo.every(index => currentBoard[index] === player)) return combo;
         }
         return null;
     }
 
-    function checkDraw(currentBoard = board) { // Added currentBoard param
-         return currentBoard.every(cell => cell !== null); // Check for non-null
-    }
+    function checkDraw(currentBoard = board) { return currentBoard.every(cell => cell !== null); }
 
     function endGame(player, winningCells) {
-        if (winningCells && Array.isArray(winningCells)) {
-            winningCells.forEach(i => cells[i] && cells[i].classList.add('rainbow')); // Add null check for cells[i]
-        }
+        if (winningCells) winningCells.forEach(i => cells[i] && cells[i].classList.add('rainbow'));
         gameActive = false;
         statusDiv.textContent = `¡${getPlayerName(player)} ganó!`;
         statusDiv.classList.add('highlight');
 
         if (player === currentSymbols.player1) {
-            unicornWins++;
-            localStorage.setItem('unicornWins', unicornWins);
+            unicornWins++; localStorage.setItem('unicornWins', unicornWins);
+            lastWinner = currentSymbols.player1;
         } else {
-            heartWins++;
-            localStorage.setItem('heartWins', heartWins);
+            heartWins++; localStorage.setItem('heartWins', heartWins);
+            lastWinner = currentSymbols.player2;
         }
+        previousGameExists = true; // Mark that a game has been completed
         updateScoreboard();
         playSound('win');
         launchConfetti();
+        setBoardClickable(false); // Disable board after game ends
     }
 
     function endDraw() {
         gameActive = false;
         statusDiv.textContent = '¡Empate!';
         statusDiv.classList.add('highlight');
-        draws++;
-        localStorage.setItem('draws', draws);
+        draws++; localStorage.setItem('draws', draws);
+        lastWinner = null; // No winner in a draw
+        previousGameExists = true; // Mark that a game has been completed
         updateScoreboard();
         playSound('draw');
+        setBoardClickable(false); // Disable board after game ends
     }
 
     function switchPlayer() {
@@ -599,149 +666,110 @@ document.addEventListener('DOMContentLoaded', () => {
         drawsSpan.textContent = draws;
     }
 
-    // ========= Audio (Improved) =========
-    function playSound(type) {
+    function playSound(type) { /* ... Your existing playSound ... */
         if (!soundEnabled) return;
-        const ctx = getAudioContext(); // Use the managed AudioContext
-        if (!ctx || ctx.state === 'suspended') { // Do not play if context is not available or suspended
-            // console.log('AudioContext not ready, skipping sound for:', type);
-            return;
-        }
-
+        const ctx = getAudioContext();
+        if (!ctx || ctx.state === 'suspended') return;
         try {
-            const o = ctx.createOscillator();
-            const g = ctx.createGain();
-            o.connect(g);
-            g.connect(ctx.destination);
-
+            const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination);
+            let freq1=440, freq2=880, duration=0.2, gainVal=0.1, waveType='sine';
             switch(type) {
-                case 'move':
-                    o.type = 'sine';
-                    o.frequency.setValueAtTime(440, ctx.currentTime);
-                    g.gain.setValueAtTime(0.1, ctx.currentTime); // Reduced gain a bit
-                    o.start();
-                    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.2);
-                    o.stop(ctx.currentTime + 0.2);
+                case 'move': freq1=440; duration=0.2; gainVal=0.08; waveType='sine'; break;
+                case 'win': freq1=600; freq2=900; let freq3=1200; duration=0.7; gainVal=0.12; waveType='triangle';
+                    o.frequency.setValueAtTime(freq1, ctx.currentTime);
+                    o.frequency.linearRampToValueAtTime(freq2, ctx.currentTime + duration*0.33);
+                    o.frequency.linearRampToValueAtTime(freq3, ctx.currentTime + duration*0.66);
                     break;
-                case 'win':
-                    o.type = 'triangle';
-                    o.frequency.setValueAtTime(800, ctx.currentTime);
-                    g.gain.setValueAtTime(0.15, ctx.currentTime); // Reduced gain
-                    o.start();
-                    o.frequency.setValueAtTime(1000, ctx.currentTime + 0.1);
-                    o.frequency.setValueAtTime(1200, ctx.currentTime + 0.2);
-                    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.7);
-                    o.stop(ctx.currentTime + 0.7);
+                case 'draw': freq1=330; freq2=220; duration=0.4; gainVal=0.1; waveType='square';
+                    o.frequency.setValueAtTime(freq1, ctx.currentTime);
+                    o.frequency.linearRampToValueAtTime(freq2, ctx.currentTime + duration*0.5);
                     break;
-                case 'draw':
-                    o.type = 'square';
-                    o.frequency.setValueAtTime(330, ctx.currentTime);
-                    g.gain.setValueAtTime(0.1, ctx.currentTime); // Reduced gain
-                    o.start();
-                    o.frequency.setValueAtTime(220, ctx.currentTime + 0.15);
-                    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
-                    o.stop(ctx.currentTime + 0.4);
+                case 'reset': freq1=500; freq2=300; duration=0.25; gainVal=0.07; waveType='sine';
+                    o.frequency.setValueAtTime(freq1, ctx.currentTime);
+                    o.frequency.linearRampToValueAtTime(freq2, ctx.currentTime + duration*0.5);
                     break;
-                case 'reset':
-                    o.type = 'sine';
-                    o.frequency.setValueAtTime(600, ctx.currentTime);
-                    g.gain.setValueAtTime(0.08, ctx.currentTime); // Reduced gain
-                    o.start();
-                    o.frequency.setValueAtTime(400, ctx.currentTime + 0.08);
-                    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
-                    o.stop(ctx.currentTime + 0.25);
-                    break;
+                default: return;
             }
-        } catch (err) {
-            console.error("Error playing sound:", type, err);
-            // Optionally disable sound further if errors persist
-            // soundEnabled = false;
-            // soundToggle.textContent = '🔇';
-        }
+            o.type = waveType;
+            if(type !== 'win' && type !== 'draw' && type !== 'reset') o.frequency.setValueAtTime(freq1, ctx.currentTime);
+            g.gain.setValueAtTime(gainVal, ctx.currentTime);
+            o.start();
+            g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + duration);
+            o.stop(ctx.currentTime + duration);
+        } catch (err) { console.error("Error playing sound:", type, err); }
     }
 
-    // ========= Confetti =========
-    function launchConfetti() {
+    function launchConfetti() { /* ... Your existing launchConfetti ... */
         const colors = ['#ff3860','#ffdd57','#17d1a2','#3e8ed0','#b86bff'];
         for (let i = 0; i < 120; i++) {
-            const conf = document.createElement('div');
-            conf.className = 'confetti';
-            conf.style.left = Math.random() * 100 + 'vw';
-            conf.style.width = (Math.random() * 8 + 4) + 'px';
-            conf.style.height = (Math.random() * 12 + 6) + 'px';
-            conf.style.background = colors[Math.floor(Math.random() * colors.length)];
-            conf.style.transform = `rotate(${Math.random() * 360}deg)`;
-            conf.style.animationDelay = (Math.random() * 0.5) + 's';
-            conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            document.body.appendChild(conf);
-            setTimeout(() => {
-                if (conf && conf.parentNode) {
-                    conf.parentNode.removeChild(conf);
-                }
-            }, 3500);
+            const conf = document.createElement('div'); conf.className = 'confetti';
+            conf.style.left = Math.random()*100+'vw'; conf.style.width=(Math.random()*8+4)+'px';
+            conf.style.height=(Math.random()*12+6)+'px'; conf.style.background=colors[Math.floor(Math.random()*colors.length)];
+            conf.style.transform=`rotate(${Math.random()*360}deg)`; conf.style.animationDelay=(Math.random()*0.5)+'s';
+            conf.style.animationDuration=(Math.random()*2+2)+'s'; document.body.appendChild(conf);
+            setTimeout(() => { if (conf && conf.parentNode) conf.parentNode.removeChild(conf); }, 3500);
         }
     }
-    function removeConfetti() {
-        document.querySelectorAll('.confetti').forEach(c => c.remove());
-    }
+    function removeConfetti() { document.querySelectorAll('.confetti').forEach(c => c.remove()); }
 
     function toggleTheme() {
         const isDark = document.body.classList.toggle('dark-theme');
-        themeToggle.textContent = isDark ? '☀️' : '🌙';
-        localStorage.setItem('darkTheme', isDark);
-        playSound('move');
+        themeToggle.textContent = isDark ? '☀️' : '🌙'; localStorage.setItem('darkTheme', isDark); playSound('move');
     }
-
     function toggleSound() {
-        soundEnabled = !soundEnabled;
-        soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+        soundEnabled = !soundEnabled; soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
         localStorage.setItem('soundDisabled', !soundEnabled);
-        if (soundEnabled) {
-            // Ensure AudioContext is ready when enabling sound
-            const ctx = getAudioContext();
-            if (ctx && ctx.state === 'running') {
-                 playSound('move'); // Play a sound to confirm
-            } else if (ctx && ctx.state === 'suspended') {
-                ctx.resume().then(() => playSound('move')).catch(err => console.error("Could not resume context on sound toggle", err));
-            }
-        }
+        if (soundEnabled) { const ctx = getAudioContext(); if (ctx && ctx.state === 'running') playSound('move'); else if (ctx && ctx.state === 'suspended') ctx.resume().then(() => playSound('move')).catch(err => console.error("Could not resume context", err));}
     }
-
     function changeSymbols() {
         currentSymbolIndex = (currentSymbolIndex + 1) % symbolSet.length;
         currentSymbols = symbolSet[currentSymbolIndex];
+        // Determine who would have been current player with old symbols to maintain turn if game is active
+        let oldPlayer1Symbol, oldPlayer2Symbol;
+        if (currentSymbolIndex === 0) { // Wrapped around from last to first
+            oldPlayer1Symbol = symbolSet[symbolSet.length - 1].player1;
+            oldPlayer2Symbol = symbolSet[symbolSet.length - 1].player2;
+        } else {
+            oldPlayer1Symbol = symbolSet[currentSymbolIndex - 1].player1;
+            oldPlayer2Symbol = symbolSet[currentSymbolIndex - 1].player2;
+        }
+
         if (gameActive) {
-            // Update currentPlayer if game is active, to ensure consistency if symbols change mid-turn assignment
-            // This assumes player1 always starts. If player2 could start, this needs more logic.
-            // For simplicity, we re-evaluate based on the current internal player (P1 or P2)
-            const wasPlayer1Turn = currentPlayer === symbolSet[(currentSymbolIndex - 1 + symbolSet.length) % symbolSet.length].player1;
-            currentPlayer = wasPlayer1Turn ? currentSymbols.player1 : currentSymbols.player2;
+            if (currentPlayer === oldPlayer1Symbol) {
+                currentPlayer = currentSymbols.player1;
+            } else if (currentPlayer === oldPlayer2Symbol) {
+                currentPlayer = currentSymbols.player2;
+            }
             statusDiv.textContent = `Turno del ${getPlayerName(currentPlayer)}`;
         } else {
-             // If game is not active, but we want to update the placeholder for the next game's starting player
-             statusDiv.textContent = `Turno del ${getPlayerName(currentSymbols.player1)}`;
+             // If game not active, status reflects who *would* start next game (based on P1 default before init applies rules)
+            statusDiv.textContent = `Turno del ${getPlayerName(currentSymbols.player1)}`;
         }
-
 
         const resultsDiv = document.getElementById('results');
-        const symbolElements = resultsDiv.childNodes;
-        symbolElements[0].textContent = currentSymbols.player1 + ' ';
-        const dashIndex = Array.from(symbolElements).findIndex(node =>
-            node.nodeType === Node.TEXT_NODE && node.textContent.includes('–'));
-        if (dashIndex !== -1 && symbolElements[dashIndex + 1]) {
-            symbolElements[dashIndex + 1].textContent = ' ' + currentSymbols.player2 + ' ';
+        const childNodes = resultsDiv.childNodes;
+        if (childNodes[0] && childNodes[0].nodeType === Node.TEXT_NODE) {
+            childNodes[0].textContent = currentSymbols.player1 + ' ';
+        }
+        const dashIndex = Array.from(childNodes).findIndex(node => node.nodeType === Node.TEXT_NODE && node.textContent.includes('–'));
+        if (dashIndex !== -1 && childNodes[dashIndex]) {
+            childNodes[dashIndex].textContent = ' – ' + currentSymbols.player2 + ' ';
         }
         playSound('move');
-        if (board.some(cell => cell !== null)) {
-            init(vsCPU ? 'cpu' : 'pvp', difficulty);
+        if (board.some(cell => cell !== null)) { // If board has moves, reset it
+            init(); // init will use current vsCPU and difficulty settings
+        } else { // If board is empty, just update display elements potentially affected by symbols (like status)
+            if (!gameActive) { // If game was over and board is now clear for next round.
+                init(); // Start a new game to apply new symbols and whoGoesFirst logic properly.
+            }
         }
     }
 
     // ========= Event Listeners =========
     cells.forEach(c => c.addEventListener('click', handleCellClick));
-    restartBtn.addEventListener('click', () => init(vsCPU ? 'cpu' : 'pvp', difficulty));
-    pvpBtn.addEventListener('click', () => { if (!vsCPU) return; init('pvp', difficulty); }); // Only init if mode changes
-    cpuBtn.addEventListener('click', () => { if (vsCPU) return; init('cpu', difficulty); }); // Only init if mode changes
+    restartBtn.addEventListener('click', () => init()); // init will use current settings
+    pvpBtn.addEventListener('click', () => { if (!vsCPU) return; init('pvp', difficulty); });
+    cpuBtn.addEventListener('click', () => { if (vsCPU) return; init('cpu', difficulty); });
 
     easyBtn.addEventListener('click', () => { if (difficulty === 'easy') return; difficulty = 'easy'; updateDifficultyButtons(); playSound('move');});
     mediumBtn.addEventListener('click', () => { if (difficulty === 'medium') return; difficulty = 'medium'; updateDifficultyButtons(); playSound('move'); });
@@ -751,23 +779,45 @@ document.addEventListener('DOMContentLoaded', () => {
     soundToggle.addEventListener('click', toggleSound);
     changeSymbolsBtn.addEventListener('click', changeSymbols);
 
+    // "Who Goes First" Button Listeners
+    player1StartsBtn.addEventListener('click', () => {
+        if (whoGoesFirstSetting === 'player1') return;
+        whoGoesFirstSetting = 'player1';
+        localStorage.setItem('whoGoesFirstSetting', whoGoesFirstSetting);
+        updateWhoGoesFirstButtons();
+        playSound('move');
+        if (!gameActive) init(); // If no game active, restart to apply setting
+    });
+    randomStartsBtn.addEventListener('click', () => {
+        if (whoGoesFirstSetting === 'random') return;
+        whoGoesFirstSetting = 'random';
+        localStorage.setItem('whoGoesFirstSetting', whoGoesFirstSetting);
+        updateWhoGoesFirstButtons();
+        playSound('move');
+        if (!gameActive) init();
+    });
+    loserStartsBtn.addEventListener('click', () => {
+        if (whoGoesFirstSetting === 'loser') return;
+        whoGoesFirstSetting = 'loser';
+        localStorage.setItem('whoGoesFirstSetting', whoGoesFirstSetting);
+        updateWhoGoesFirstButtons();
+        playSound('move');
+        if (!gameActive) init();
+    });
+
+
     cells.forEach(cell => {
         cell.setAttribute('tabindex', '0');
         cell.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                // Manually trigger the click handler logic for the cell
-                // Ensure 'e.currentTarget' is correctly simulated or passed if needed by handleCellClick
-                // A direct call to handleCellClick might be tricky if it heavily relies on event properties not present here.
-                // Simpler: just click the cell.
-                e.currentTarget.click();
-            }
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); }
         });
     });
+    document.addEventListener('dblclick', function(e) { e.preventDefault(); }, { passive: false });
 
-    document.addEventListener('dblclick', function(e) {
-        e.preventDefault();
-    }, { passive: false }); // Added passive:false for explicitness, though default usually works
+    // Initial setup calls
+    updateScoreboard();
+    // updateWhoGoesFirstButtons(); // Called within init
+    init(); // Initial game setup
 });
 </script>
 </body>
