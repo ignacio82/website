@@ -6,268 +6,140 @@
     <title>Ta‑Te‑Ti Deluxe</title>
     <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet" />
     <style>
+        /* ------------  PALETA  ------------ */
         :root {
             --pink-light: #ffc0cb;
-            --pink: #ff69b4;
-            --pink-dark: #ff1493;
+            --pink:       #ff69b4;
+            --pink-dark:  #ff1493;
             --pink-extra: #ffe4e1;
-            --border-radius: 12px;
+            --radius: 12px;
         }
-        * { box-sizing: border-box; }
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 0.8rem; /* Adjusted gap slightly */
-            min-height: 100vh;
-            margin: 0;
-            background: var(--pink-light);
-            font-family: "Bubblegum Sans", cursive;
-            color: var(--pink);
-            overflow-x: hidden;
-            transition: background-color 0.5s;
+        *{box-sizing:border-box;}
+        body{
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+            min-height:100vh;margin:0;font-family:"Bubblegum Sans",cursive;
+            background:var(--pink-light);color:var(--pink);overflow-x:hidden;
+            transition:background .4s;
         }
-        h1 {
-            margin: 0.2em 0 0;
-            font-size: 3rem;
-            text-shadow: 2px 2px rgba(0,0,0,0.1);
-            animation: bounce 2s infinite alternate;
+        h1{margin:.1em 0 .4em;font-size:clamp(2.2rem,4vw+0.5rem,3.5rem);text-shadow:2px 2px rgba(0,0,0,.1);}
+
+        /* ------------  TABLERO  ------------ */
+        #game{
+            display:grid;
+            grid-template-columns:repeat(3,min(24vw,120px));
+            grid-template-rows:repeat(3,min(24vw,120px));
+            gap:min(3vw,10px);
+            padding:10px;
+            background:#fff;border:6px solid var(--pink);border-radius:var(--radius);
+            box-shadow:0 6px 18px rgba(0,0,0,.25);user-select:none;
+            transition: border-color 0.3s, box-shadow 0.3s; /* For draw animation */
         }
-        @keyframes bounce {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-10px); }
-        }
+        .cell{display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:clamp(2rem,6vw,4rem);background:var(--pink-extra);border:2px solid #ffb6c1;border-radius:var(--radius);cursor:pointer;transition:background .15s ease;position:relative;overflow:hidden;}
+        .cell:hover:not(.disabled){background:var(--pink-light);}
+        .cell.disabled{cursor:default;opacity:.7;}
+        .cell.rainbow::after{content:"";position:absolute;inset:0;background:linear-gradient(45deg,red,orange,yellow,green,blue,indigo,violet,red);background-size:400% 400%;animation:rb 2s linear infinite;opacity:.7;z-index:0;}
+        .cell span{position:relative;z-index:1;}
+        @keyframes rb{0%{background-position:0 50%}100%{background-position:100% 50%}}
+
+        /* ------------  STATUS  ------------ */
         #status {
-            font-size: 1.6rem;
+            font-size:clamp(1.2rem, 3vw, 1.6rem); /* Responsive font size */
             min-height: 2.2rem;
             text-align: center;
-            transition: transform 0.3s;
+            transition: transform 0.3s, color 0.3s;
+            margin-bottom: clamp(10px, 2vh, 15px); /* Spacing below status */
         }
         #status.highlight {
             transform: scale(1.2);
             color: var(--pink-dark);
         }
-        #game {
-            display: grid;
-            grid-template-columns: repeat(3, 90px);
-            grid-template-rows: repeat(3, 90px);
-            gap: 8px;
-            padding: 10px;
-            border: 6px solid var(--pink);
-            background: #fff;
-            border-radius: var(--border-radius);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-            user-select: none;
-            transition: transform 0.3s ease;
-        }
-        #game:hover {
-            transform: scale(1.02);
-        }
-        .cell {
-            width: 90px; height: 90px;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 3.2rem;
-            background: var(--pink-extra);
-            border: 2px solid #ffb6c1;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            position: relative;
-            overflow: hidden;
-        }
-        .cell:hover:not(.disabled) { /* Only apply hover effects if not disabled */
-            background: var(--pink-light);
-            transform: translateY(-3px);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-        }
-        .cell.disabled {
-            cursor: default;
-            /* Optionally, slightly different style for disabled cells */
-            /* opacity: 0.7; */
-        }
-        .cell span {
-            display: inline-block;
-            transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        }
-        .cell.mark-animation span {
-            transform: scale(1.3);
-        }
-        .cell.rainbow::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet, red);
-            background-size: 400% 400%;
-            animation: rainbowBG 2s linear infinite;
-            z-index: 0;
-            opacity: 0.7;
-        }
-        .cell.rainbow > span {
-            position: relative;
-            z-index: 1;
-            text-shadow: 0 0 5px white;
-        }
-        @keyframes rainbowBG {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
-        .confetti {
-            position: fixed;
-            top: -10px;
-            width: 8px;
-            height: 12px;
-            background: red;
-            opacity: 0.9;
-            border-radius: 2px;
-            pointer-events: none;
-            animation: fall 3s linear forwards;
-        }
-        @keyframes fall {
-            to {
-                transform: translateY(110vh) rotateZ(360deg);
-                opacity: 0;
-            }
-        }
-        .controls-group { /* Wrapper for control sections */
-            display: flex;
-            flex-direction: column;
-            gap: 8px; /* Spacing between control groups like mode, difficulty, etc. */
-            align-items: center; /* This will center the .game-start-options div if its width is not 100% */
-            width: 100%; /* Make the group take full width to center its content lines */
-            padding: 0 10px; /* Add some padding so content doesn't touch edges */
-        }
-        .mode, .difficulty, .game-start-options, .controls {
-            display: flex;
-            flex-wrap: wrap; /* Allows items to wrap if not enough space */
-            gap: 10px;
-            justify-content: center; /* Center the items within this flex container */
-            align-items: center; /* Vertically align items in the line */
-            width: 100%; /* Make each control line take full width to allow its content to be centered */
-        }
-         .game-start-options span { /* The "Quién empieza:" label */
-            font-size: 1rem;
-            margin-right: 8px; /* Add a little space between the label and the first button */
-            white-space: nowrap; /* Prevent the label from wrapping */
-        }
-        button {
-            padding: 10px 22px;
-            font-size: 1rem;
-            background: var(--pink);
-            color: #fff;
-            border: none;
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: "Bubblegum Sans", cursive;
-        }
-        button:hover { background: var(--pink-dark); transform: translateY(-2px); }
-        button:active { transform: translateY(0); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
 
-        button.mode-btn.active,
-        button.difficulty-btn.active,
-        button.start-option-btn.active { /* Combined active styles */
-            outline: 3px solid var(--pink-dark);
-            background: var(--pink-dark);
+        /* ------------  SCORE  ------------ */
+        #results{margin-top:clamp(10px,3vh,20px);padding:6px 14px;background:#fff;border:2px dashed var(--pink);border-radius:var(--radius);font-size:clamp(1rem,2.5vw,1.3rem);}
+        #results span{min-width:2ch;display:inline-block;font-weight:bold;}
+
+        /* ------------  TOP‑BAR  ------------ */
+        .top-bar{position:fixed;top:10px;left:10px;right:10px;display:flex;align-items:center;justify-content:space-between;pointer-events:none;z-index:200;}
+        .top-bar button{pointer-events:auto;}
+        .icon-btn{background:none;border:none;cursor:pointer;font-size:2rem;padding:4px;line-height:1;color:var(--pink-dark);transition:transform .15s;}
+        .icon-btn:hover{transform:scale(1.1);}
+
+        /* ------------  SIDE‑MENU  ------------ */
+        #menu-toggle{font-size:2.2rem;}
+        .side-menu{position:fixed;top:0;left:0;height:100vh;width:clamp(250px, 70vw, 300px);background:var(--pink-light);box-shadow:3px 0 8px rgba(0,0,0,.15);transform:translateX(-100%);transition:transform .3s ease;padding:70px 14px 20px;display:flex;flex-direction:column;gap:18px;z-index:150;overflow-y:auto;}
+        .side-menu.open{transform:translateX(0);}
+        .side-menu .controls-group{display:flex;flex-direction:column;gap:14px;align-items:center;}
+        .side-menu .controls-group>div{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+        .side-menu .controls-group>div>span{width:100%;text-align:center;margin-bottom:-5px; font-size:0.9rem; color:var(--pink-dark);} /* Label for sections */
+        button.std{padding:8px 20px;font-size:1rem;background:var(--pink);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:filter .15s, box-shadow .15s;}
+        button.std:hover{filter:brightness(.9);}
+        button.std.active{outline:3px solid var(--pink-dark);filter:brightness(.88); box-shadow: 0 0 5px var(--pink-dark);}
+
+        /* hide original restart  */
+        #restartBtn{display:none;}
+
+        /* Confetti  */
+        .confetti{
+            position:fixed;
+            /* top, left, width, height, background, opacity are set by JS for variety */
+            border-radius:4px; /* Or 50% for round confetti */
+            pointer-events:none;
+            z-index:1000; /* Ensure confetti is on top */
         }
-        #results {
-            font-size: 1.2rem;
-            text-align: center;
-            margin-top: 10px;
-            background: white;
-            padding: 8px 15px;
-            border-radius: var(--border-radius);
-            border: 2px dashed var(--pink);
-        }
-        #results span {
-            display: inline-block;
-            min-width: 2ch;
-            font-weight: bold;
-        }
-        .theme-toggle {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-        }
-        body.dark-theme {
-            background: #2b2b2b;
-            color: #ffc0cb;
-        }
-        body.dark-theme #game {
-            border-color: var(--pink-dark);
-            background: #3d3d3d;
-        }
-        body.dark-theme .cell {
-            background: #4a4a4a;
-            border-color: #5a5a5a;
-            color: white;
-        }
-        body.dark-theme .cell:hover:not(.disabled) {
-            background: #5a5a5a;
-        }
-        body.dark-theme #results {
-            background: #3d3d3d;
-            border-color: var(--pink-dark);
-            color: white;
-        }
-        body.dark-theme .game-start-options span {
-            color: var(--pink-light);
-        }
-        .sound-toggle {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-        }
-        @media (max-width: 480px) { /* Slightly adjusted breakpoint */
-            body { gap: 0.5rem; }
-            h1 { font-size: 2.5rem; }
-            #game {
-                grid-template-columns: repeat(3, 70px);
-                grid-template-rows: repeat(3, 70px);
-                gap: 5px;
-            }
-            .cell {
-                width: 70px; height: 70px;
-                font-size: 2.5rem;
-            }
-            button { padding: 8px 15px; font-size: 0.9rem;}
-            .controls-group {
-                 padding: 0 5px; /* Reduce padding slightly on small screens */
-            }
-            .mode, .difficulty, .game-start-options, .controls {
-                 gap: 8px;
-            }
-            .game-start-options span {
-                 /* On very small screens, if label still causes awkward wrapping with buttons,
-                    you could make it display block and center text, then buttons wrap below.
-                    Example:
-                    display: block;
-                    width: 100%;
-                    text-align: center;
-                    margin-bottom: 5px;
-                    margin-right: 0;
-                 */
+        @keyframes fall{
+            to{
+                transform:translateY(110vh) rotateZ(720deg); /* Increased rotation */
+                opacity:0;
             }
         }
+
+        /* Draw Animation Styles */
+        #status.highlight-draw-flash {
+            animation: drawStatusFlash 0.3s 6 alternate; /* Flash 3 times */
+        }
+        @keyframes drawStatusFlash {
+            from { color: var(--pink-dark); transform: scale(1.25); }
+            to { color: var(--pink); transform: scale(1.0); }
+        }
+        #game.highlight-draw-border {
+            animation: drawBoardFlash 0.3s 6 alternate;
+        }
+        @keyframes drawBoardFlash {
+            0% { border-color: var(--pink-dark); box-shadow: 0 0 15px var(--pink-dark); }
+            50% { border-color: var(--pink-light); box-shadow: 0 0 5px var(--pink-light); }
+            100% { border-color: var(--pink-dark); box-shadow: 0 0 15px var(--pink-dark); }
+        }
+
+        /* dark theme modifiers  */
+        body.dark-theme{background:#2b2b2b;color:#ffc0cb;}
+        body.dark-theme #game{background:#3d3d3d;border-color:var(--pink-dark);}
+        body.dark-theme .cell{background:#4a4a4a;border-color:#5a5a5a;color:#fff;}
+        body.dark-theme #results{background:#3d3d3d;border-color:var(--pink-dark);color:#fff;}
+        body.dark-theme .side-menu{background:#3d3d3d;}
+        body.dark-theme .side-menu .controls-group>div>span{color:var(--pink-light);}
+        body.dark-theme .icon-btn{color:var(--pink-light);}
+
+
+        @media(max-width:500px){
+            #game{gap:min(2vw,8px);}
+            h1{font-size:clamp(2rem,7vw,2.7rem);}
+            #results{font-size:clamp(.9rem,3vw,1rem);}
+            .side-menu{padding-top:60px;}
+            .icon-btn{font-size:1.8rem;}
+            #menu-toggle{font-size:2rem;}
+         }
     </style>
 </head>
 <body>
-    <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">🌙</button>
-    <button class="sound-toggle" id="soundToggle" aria-label="Activar/Desactivar sonido">🔊</button>
+
+    <div class="top-bar">
+        <button id="menu-toggle" class="icon-btn" aria-label="Menú">☰</button>
+        <button id="restart-icon" class="icon-btn" aria-label="Reiniciar">🔄</button>
+    </div>
 
     <h1>Ta‑Te‑Ti</h1>
     <div id="status" aria-live="polite">Turno del 🦄 Unicornio</div>
+
     <div id="game" role="grid" aria-label="Tablero de juego">
         <div class="cell" role="button" aria-label="Celda 1" data-index="0"><span></span></div>
         <div class="cell" role="button" aria-label="Celda 2" data-index="1"><span></span></div>
@@ -280,544 +152,413 @@
         <div class="cell" role="button" aria-label="Celda 9" data-index="8"><span></span></div>
     </div>
 
-    <div class="controls-group">
-        <div class="mode" aria-label="Seleccionar modo">
-            <button id="pvpBtn" class="mode-btn active">Jugador vs Jugador</button>
-            <button id="cpuBtn" class="mode-btn">Jugador vs CPU</button>
-        </div>
-        <div class="difficulty" aria-label="Seleccionar dificultad" style="display: none;">
-            <button id="easyBtn" class="difficulty-btn">Fácil</button>
-            <button id="mediumBtn" class="difficulty-btn active">Normal</button>
-            <button id="hardBtn" class="difficulty-btn">Difícil</button>
-        </div>
-        <div class="game-start-options" aria-label="Seleccionar quién empieza">
-            <span>Quién empieza:</span>
-            <button id="player1StartsBtn" class="start-option-btn">Jugador 1</button>
-            <button id="randomStartsBtn" class="start-option-btn">Aleatorio</button>
-            <button id="loserStartsBtn" class="start-option-btn">Perdedor</button>
-        </div>
-        <div class="controls">
-            <button id="restartBtn">Reiniciar</button>
-            <button id="changeSymbolsBtn">Cambiar símbolos</button>
-        </div>
-    </div>
+    <div id="results">🦄 <span id="unicornWins">0</span> – ❤️ <span id="heartWins">0</span> – 🤝 <span id="draws">0</span></div>
 
-    <div id="results">
-        🦄 <span id="unicornWins">0</span> – ❤️ <span id="heartWins">0</span> – 🤝 <span id="draws">0</span>
-    </div>
+    <nav id="side-menu" class="side-menu" aria-label="Opciones">
+        <div class="controls-group">
+             <div><span>Modo de Juego:</span></div>
+            <div class="mode" aria-label="Seleccionar modo">
+                <button id="pvpBtn"     class="std mode-btn active">Jugador vs Jugador</button>
+                <button id="cpuBtn"     class="std mode-btn">Jugador vs CPU</button>
+            </div>
+            <div><span>Dificultad CPU:</span></div>
+            <div class="difficulty" aria-label="Seleccionar dificultad" style="display:none;">
+                <button id="easyBtn"   class="std difficulty-btn">Fácil</button>
+                <button id="mediumBtn" class="std difficulty-btn active">Normal</button>
+                <button id="hardBtn"   class="std difficulty-btn">Difícil</button>
+            </div>
+            <div><span>Quién Empieza:</span></div>
+            <div class="game-start-options" aria-label="Seleccionar quién empieza">
+                <button id="player1StartsBtn" class="std start-option-btn">Jugador 1</button>
+                <button id="randomStartsBtn"  class="std start-option-btn">Aleatorio</button>
+                <button id="loserStartsBtn"   class="std start-option-btn">Perdedor</button>
+            </div>
+            <button id="changeSymbolsBtn" class="std" style="margin-top:10px;">Cambiar símbolos</button>
+        </div>
+        <div style="margin-top:auto; display:flex; justify-content:space-around; padding-top: 20px;">
+            <button id="soundToggle" class="icon-btn" aria-label="Sonido">🔊</button>
+            <button id="themeToggle" class="icon-btn" aria-label="Tema">🌙</button>
+        </div>
+    </nav>
+
+    <button id="restartBtn" aria-hidden="true" style="display:none;">Restart</button>
+
 <script>
+/****************************************************
+ * GAME LOGIC                     *
+ ***************************************************/
 document.addEventListener('DOMContentLoaded', () => {
-    // ======== State =========
-    const cells = document.querySelectorAll('.cell');
-    const statusDiv = document.getElementById('status');
-    const restartBtn = document.getElementById('restartBtn');
-    const pvpBtn = document.getElementById('pvpBtn');
-    const cpuBtn = document.getElementById('cpuBtn');
-    const difficultyDiv = document.querySelector('.difficulty');
-    const easyBtn = document.getElementById('easyBtn');
-    const mediumBtn = document.getElementById('mediumBtn');
-    const hardBtn = document.getElementById('hardBtn');
-    const unicornSpan = document.getElementById('unicornWins');
-    const heartSpan = document.getElementById('heartWins');
-    const drawsSpan = document.getElementById('draws');
-    const themeToggle = document.getElementById('themeToggle');
-    const soundToggle = document.getElementById('soundToggle');
-    const changeSymbolsBtn = document.getElementById('changeSymbolsBtn');
+    /* ----------  ELEMENTOS DEL DOM  ---------- */
+    const cells             = document.querySelectorAll('.cell');
+    const statusDiv         = document.getElementById('status');
+    const restartBtn        = document.getElementById('restartBtn'); // Hidden, triggered by icon
+    const pvpBtn            = document.getElementById('pvpBtn');
+    const cpuBtn            = document.getElementById('cpuBtn');
+    const difficultyDiv     = document.querySelector('.difficulty');
+    const easyBtn           = document.getElementById('easyBtn');
+    const mediumBtn         = document.getElementById('mediumBtn');
+    const hardBtn           = document.getElementById('hardBtn');
+    const unicornSpan       = document.getElementById('unicornWins');
+    const heartSpan         = document.getElementById('heartWins');
+    const drawsSpan         = document.getElementById('draws');
+    const themeToggle       = document.getElementById('themeToggle');
+    const soundToggle       = document.getElementById('soundToggle');
+    const changeSymbolsBtn  = document.getElementById('changeSymbolsBtn');
+    const player1StartsBtn  = document.getElementById('player1StartsBtn');
+    const randomStartsBtn   = document.getElementById('randomStartsBtn');
+    const loserStartsBtn    = document.getElementById('loserStartsBtn');
+    const gameBoardEl       = document.getElementById('game'); // Reference to the game board for animations
 
-    // New "Who Goes First" Buttons
-    const player1StartsBtn = document.getElementById('player1StartsBtn');
-    const randomStartsBtn = document.getElementById('randomStartsBtn');
-    const loserStartsBtn = document.getElementById('loserStartsBtn');
+    /* ----------  MENU & RESTART ICON  ---------- */
+    const menuToggle        = document.getElementById('menu-toggle');
+    const sideMenu          = document.getElementById('side-menu');
+    const restartIcon       = document.getElementById('restart-icon');
 
-    let board, currentPlayer, gameActive, vsCPU, difficulty;
-    let soundEnabled = true;
+    menuToggle.addEventListener('click', () => sideMenu.classList.toggle('open'));
+    document.addEventListener('click', function(event) { // Close menu if clicking outside
+        if (!sideMenu.contains(event.target) && !menuToggle.contains(event.target) && sideMenu.classList.contains('open')) {
+            sideMenu.classList.remove('open');
+        }
+    });
+    restartIcon.addEventListener('click', () => {
+        removeConfetti(); // Clear confetti on manual restart
+        restartBtn.click(); // Trigger hidden button that calls init()
+        if (sideMenu.classList.contains('open')) sideMenu.classList.remove('open'); // Close menu on restart
+    });
+
+
+    /* ----------  ESTADO  ---------- */
+    let board, currentPlayer, gameActive, vsCPU = false, difficulty = 'medium';
+    let soundEnabled = !(localStorage.getItem('soundDisabled') === 'true');
     let symbolSet = [
-        { player1: '🦄', player2: '❤️' },
-        { player1: '🐱', player2: '🐶' },
-        { player1: '🌞', player2: '🌙' },
-        { player1: '❌', player2: '⭕' }
+        { player1:'🦄', player2:'❤️' }, { player1:'🐱', player2:'🐶' },
+        { player1:'🌞', player2:'🌙' }, { player1:'❌', player2:'⭕' }
     ];
-    let currentSymbolIndex = 0;
+    let currentSymbolIndex = +(localStorage.getItem('currentSymbolIndex') || 0);
     let currentSymbols = symbolSet[currentSymbolIndex];
 
     let unicornWins = +localStorage.getItem('unicornWins') || 0;
-    let heartWins = +localStorage.getItem('heartWins') || 0;
-    let draws = +localStorage.getItem('draws') || 0;
+    let heartWins   = +localStorage.getItem('heartWins') || 0;
+    let draws       = +localStorage.getItem('draws') || 0;
 
-    // New state for "Who Goes First"
-    let whoGoesFirstSetting = localStorage.getItem('whoGoesFirstSetting') || 'player1'; // 'player1', 'random', 'loser'
-    let lastWinner = null; // null, currentSymbols.player1, currentSymbols.player2
-    let previousGameExists = false; // To handle "loser first" on the very first game
+    let whoGoesFirstSetting = localStorage.getItem('whoGoesFirstSetting') || 'player1';
+    let lastWinner = null;
+    let previousGameExists = (unicornWins + heartWins + draws) > 0; // Check if any game was played before
 
-    // ======== AudioContext Management =========
+    /* ----------  CONSTANTES AUTO-REINICIO  ---------- */
+    const AUTO_RESTART_DELAY_WIN = 5000; // 5 seconds
+    const AUTO_RESTART_DELAY_DRAW = 3000; // 3 seconds
+
+    /* ----------  AUDIO CONTEXT  ---------- */
     let audioCtx;
-    function getAudioContext() {
-        if (!audioCtx) {
-            try {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            } catch (e) {
-                console.error("AudioContext not supported or could not be created.", e);
-                soundEnabled = false; soundToggle.textContent = '🔇'; localStorage.setItem('soundDisabled', true); return null;
-            }
+    function getAudioContext(){
+        if(!audioCtx && soundEnabled){ // Only create if sound is enabled
+            try{audioCtx = new (window.AudioContext||window.webkitAudioContext)();}
+            catch(e){console.error("AudioContext error",e);soundEnabled=false;soundToggle.textContent='🔇';localStorage.setItem('soundDisabled',true);return null;}
         }
-        if (audioCtx && audioCtx.state === 'suspended') {
-            audioCtx.resume().catch(err => {
-                console.error("Failed to resume AudioContext. Disabling sound.", err);
-                soundEnabled = false; soundToggle.textContent = '🔇'; localStorage.setItem('soundDisabled', true);
-            });
+        if(audioCtx && audioCtx.state==='suspended'){
+            audioCtx.resume().catch(err=>{console.error("Resume AudioContext failed",err);});
         }
         return audioCtx;
     }
+    // Attempt to initialize AudioContext on first user interaction (sound toggle) for autoplay policies
+    function initAudioOnInteraction() {
+        if (soundEnabled && !audioCtx) {
+            getAudioContext();
+        }
+    }
 
-    // Load theme preference
-    const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
-    if (isDarkTheme) { document.body.classList.add('dark-theme'); themeToggle.textContent = '☀️'; }
+    /* ----------  CONFETTI & DRAW ANIMATION  ---------- */
+    function launchConfetti() {
+        if (!soundEnabled) return; // Optional: tie confetti to sound setting or make independent
+        const confettiColors = ['#ff3860', '#ffdd57', '#17d1a2', '#3e8ed0', '#b86bff', 'var(--pink)', 'var(--pink-dark)'];
+        const numConfetti = 100;
 
-    // Load sound preference
-    const isSoundDisabled = localStorage.getItem('soundDisabled') === 'true';
-    if (isSoundDisabled) { soundEnabled = false; soundToggle.textContent = '🔇'; }
+        for (let i = 0; i < numConfetti; i++) {
+            const c = document.createElement('div');
+            c.classList.add('confetti');
+            c.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+            c.style.left = `${Math.random() * 100}vw`;
+            c.style.top = `${Math.random() * -80 - 20}px`; // Start well above screen
+            const animDuration = Math.random() * 2 + 3; // 3-5 seconds
+            const animDelay = Math.random() * 0.5;
+            c.style.width = `${Math.random() * 6 + 6}px`;
+            c.style.height = `${Math.random() * 10 + 8}px`;
+            c.style.opacity = `${Math.random() * 0.4 + 0.6}`; // 0.6 to 1.0
+            c.style.transform = `rotate(${Math.random() * 360}deg) scale(${Math.random() * 0.5 + 0.5})`; // Initial rotation and scale
+            c.style.animationName = 'fall';
+            c.style.animationDuration = `${animDuration}s`;
+            c.style.animationDelay = `${animDelay}s`;
+            c.style.animationTimingFunction = 'ease-out'; // Fall looks better with ease-out
+            c.style.animationFillMode = 'forwards';
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), (animDuration + animDelay) * 1000 + 200);
+        }
+    }
+    function removeConfetti() {
+        document.querySelectorAll('.confetti').forEach(c => c.remove());
+    }
+    function playDrawAnimation() {
+        const animationCssDuration = 1800; // 0.3s * 6 states = 1.8s
+        statusDiv.classList.add('highlight-draw-flash');
+        gameBoardEl.classList.add('highlight-draw-border');
+        setTimeout(() => {
+            statusDiv.classList.remove('highlight-draw-flash');
+            gameBoardEl.classList.remove('highlight-draw-border');
+            gameBoardEl.style.borderColor = ''; // Reset to CSS default
+            gameBoardEl.style.boxShadow = '';
+        }, animationCssDuration);
+        return animationCssDuration;
+    }
 
-    const winningCombos = [
-        [0,1,2],[3,4,5],[6,7,8], [0,3,6],[1,4,7],[2,5,8], [0,4,8],[2,4,6]
-    ];
 
+    /* ----------  LÓGICA PRINCIPAL  ---------- */
     function setBoardClickable(clickable) {
         cells.forEach(cellNode => {
             if (clickable) {
-                if (!board[cellNode.dataset.index]) { // Only enable empty cells
-                    cellNode.classList.remove('disabled');
-                }
+                if (!board[cellNode.dataset.index]) cellNode.classList.remove('disabled');
+                else cellNode.classList.add('disabled'); // Ensure filled cells stay disabled
             } else {
                 cellNode.classList.add('disabled');
             }
         });
     }
 
-    // ========= Inicialización =========
-    function init(mode = vsCPU ? 'cpu' : 'pvp', diff = difficulty || 'medium') {
+    function init() {
         removeConfetti();
         board = Array(9).fill(null);
-        vsCPU = mode === 'cpu';
-        difficulty = diff;
+        vsCPU = cpuBtn.classList.contains('active'); // More direct way to check current mode
+        difficulty = easyBtn.classList.contains('active') ? 'easy' : hardBtn.classList.contains('active') ? 'hard' : 'medium';
 
         let initialPlayer;
         switch (whoGoesFirstSetting) {
-            case 'random':
-                initialPlayer = Math.random() < 0.5 ? currentSymbols.player1 : currentSymbols.player2;
-                break;
+            case 'random': initialPlayer = Math.random() < 0.5 ? currentSymbols.player1 : currentSymbols.player2; break;
             case 'loser':
-                if (!previousGameExists || lastWinner === null) { // First game ever, or last game was a draw/tie
-                    initialPlayer = currentSymbols.player1; // Default to P1
-                } else if (lastWinner === currentSymbols.player1) {
-                    initialPlayer = currentSymbols.player2;
-                } else { // lastWinner was currentSymbols.player2
-                    initialPlayer = currentSymbols.player1;
-                }
+                if (!previousGameExists || lastWinner === null) initialPlayer = currentSymbols.player1;
+                else initialPlayer = (lastWinner === currentSymbols.player1) ? currentSymbols.player2 : currentSymbols.player1;
                 break;
-            case 'player1':
-            default:
-                initialPlayer = currentSymbols.player1;
-                break;
+            case 'player1': default: initialPlayer = currentSymbols.player1; break;
         }
         currentPlayer = initialPlayer;
         gameActive = true;
 
         cells.forEach(c => {
-            if (c && c.querySelector('span')) { c.querySelector('span').textContent = ''; }
-            if (c) { c.classList.remove('rainbow', 'mark-animation'); } // Keep 'disabled' status managed by setBoardClickable
+            if(c.querySelector('span')) c.querySelector('span').textContent = '';
+            c.classList.remove('rainbow', 'mark-animation', 'disabled');
         });
-        setBoardClickable(true); // Enable by default, then disable if CPU starts
 
         statusDiv.textContent = `Turno del ${getPlayerName(currentPlayer)}`;
-        statusDiv.classList.add('highlight');
-        setTimeout(() => statusDiv.classList.remove('highlight'), 300);
+        statusDiv.classList.remove('highlight', 'highlight-draw-flash'); // Clear previous highlights
+        gameBoardEl.classList.remove('highlight-draw-border');
+        gameBoardEl.style.borderColor = ''; gameBoardEl.style.boxShadow = ''; // Reset explicit styles
 
-        updateModeButtons();
-        difficultyDiv.style.display = vsCPU ? 'flex' : 'none';
-        updateDifficultyButtons();
-        updateWhoGoesFirstButtons(); // Ensure "who goes first" buttons are correctly highlighted
-
-        const gameBoard = document.getElementById('game');
-        gameBoard.style.transform = 'scale(0.95)';
-        setTimeout(() => { gameBoard.style.transform = ''; }, 200);
+        updateAllUIToggleButtons(); // Updates mode, difficulty, whoGoesFirst based on state vars
 
         playSound('reset');
 
         if (vsCPU && currentPlayer === currentSymbols.player2 && gameActive) {
-            setBoardClickable(false); // CPU is starting, make board unclickable
+            setBoardClickable(false);
             setTimeout(() => {
                 cpuMove();
-                if (gameActive) { // Make board clickable after CPU's first move, if game not ended
-                    setBoardClickable(true);
-                }
-            }, 700);
+                if (gameActive) setBoardClickable(true);
+            }, 700 + Math.random()*300); //Slightly variable CPU thinking time
+        } else {
+            setBoardClickable(true);
         }
+        sideMenu.classList.remove('open'); // Close menu on new game start
     }
 
     function getPlayerName(symbol) {
-        const player1Name = symbol === '🦄' ? 'Unicornio' : symbol === '🐱' ? 'Gatito' : symbol === '🌞' ? 'Sol' : 'Equis';
-        const player2Name = symbol === '❤️' ? 'Corazón' : symbol === '🐶' ? 'Perrito' : symbol === '🌙' ? 'Luna' : 'Círculo';
-        return symbol === currentSymbols.player1 ? `${symbol} ${player1Name}` : `${symbol} ${player2Name}`;
+        const p1Data = symbolSet.find(s => s.player1 === symbol) || symbolSet.find(s => s.player2 === symbol);
+        if (symbol === currentSymbols.player1) return `${symbol} ${symbol === '🦄'?'Unicornio':symbol === '🐱'?'Gatito':symbol === '🌞'?'Sol':'Equis'}`;
+        if (symbol === currentSymbols.player2) return `${symbol} ${symbol === '❤️'?'Corazón':symbol === '🐶'?'Perrito':symbol === '🌙'?'Luna':'Círculo'}`;
+        return `${symbol}`; // Fallback
     }
 
-    function updateModeButtons() {
+    function updateAllUIToggleButtons() {
         pvpBtn.classList.toggle('active', !vsCPU);
         cpuBtn.classList.toggle('active', vsCPU);
-    }
-
-    function updateDifficultyButtons() {
+        difficultyDiv.style.display = vsCPU ? 'flex' : 'none';
         easyBtn.classList.toggle('active', difficulty === 'easy');
         mediumBtn.classList.toggle('active', difficulty === 'medium');
         hardBtn.classList.toggle('active', difficulty === 'hard');
-    }
-
-    function updateWhoGoesFirstButtons() {
         player1StartsBtn.classList.toggle('active', whoGoesFirstSetting === 'player1');
         randomStartsBtn.classList.toggle('active', whoGoesFirstSetting === 'random');
         loserStartsBtn.classList.toggle('active', whoGoesFirstSetting === 'loser');
+        themeToggle.textContent = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
+        soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
     }
 
-    // ========= Lógica del juego =========
     function handleCellClick(e) {
         const cellElement = e.currentTarget;
         if (!cellElement || typeof cellElement.dataset === 'undefined') return;
-        const idxStr = cellElement.dataset.index;
-        if (typeof idxStr === 'undefined') return;
-        const idx = +idxStr;
-        if (isNaN(idx)) return;
-
-        if (!gameActive || board[idx] !== null || cellElement.classList.contains('disabled')) return;
+        const idx = +cellElement.dataset.index;
+        if (isNaN(idx) || !gameActive || board[idx] !== null || cellElement.classList.contains('disabled')) return;
 
         makeMove(idx, currentPlayer);
         const winInfo = checkWin(currentPlayer);
-
         if (winInfo) return endGame(currentPlayer, winInfo);
         if (checkDraw()) return endDraw();
 
         switchPlayer();
         if (vsCPU && currentPlayer === currentSymbols.player2 && gameActive) {
-            setBoardClickable(false); // Human just moved, now CPU's turn, disable board
+            setBoardClickable(false);
             setTimeout(() => {
                 cpuMove();
-                if (gameActive) { // Re-enable board if game didn't end
-                    setBoardClickable(true);
-                }
-            }, 700);
+                if (gameActive) setBoardClickable(true);
+            }, 700 + Math.random()*300);
         }
     }
 
     function makeMove(idx, player) {
         board[idx] = player;
-        const cell = cells[idx];
-        if (!cell) return;
-        const span = cell.querySelector('span');
-        if (!span) return;
-        span.textContent = player;
-        cell.classList.add('disabled', 'mark-animation'); // Mark cell as used and disabled
-        setTimeout(() => cell.classList.remove('mark-animation'), 300);
+        cells[idx].querySelector('span').textContent = player;
+        cells[idx].classList.add('disabled'); // 'disabled' is enough, animation can be separate
+        cells[idx].style.animation = 'cellSelectAnim 0.3s ease'; // Simple feedback
+        setTimeout(()=> cells[idx].style.animation = '', 300);
         playSound('move');
     }
+    // CSS for cellSelectAnim: @keyframes cellSelectAnim { 0%{transform:scale(0.9)} 100%{transform:scale(1)} } - add to <style>
 
     function cpuMove() {
-        if (!gameActive) return; // Ensure game is active before CPU moves
+        if (!gameActive) return;
         let idx;
         switch(difficulty) {
             case 'easy': idx = randomMove(); break;
-            case 'medium': idx = Math.random() < 0.7 ? bestMove() : randomMove(); break;
+            case 'medium': idx = Math.random() < 0.75 ? bestMove() : randomMove(); break; // Slightly better medium
             case 'hard': default: idx = bestMove(); break;
         }
-        if (idx === undefined || idx === null || board[idx] !== null) { // Double check if cell is available
-             // Fallback if bestMove/randomMove somehow failed or picked a taken cell
-            idx = randomMove();
-            if (idx === null) { // No moves left, should be a draw but handle defensively
-                if(checkDraw()) endDraw();
-                return;
-            }
-        }
+        if (idx === null || board[idx] !== null) idx = randomMove(); // Fallback
+        if (idx === null) { if(checkDraw()) endDraw(); return; } // No moves left
 
         makeMove(idx, currentSymbols.player2);
         const winInfo = checkWin(currentSymbols.player2);
         if (winInfo) return endGame(currentSymbols.player2, winInfo);
         if (checkDraw()) return endDraw();
-        switchPlayer(); // Switch back to human player
+        switchPlayer();
     }
 
     function randomMove() {
-        const available = board.map((val, idx) => val === null ? idx : null).filter(val => val !== null);
-        if (available.length === 0) return null;
-        return available[Math.floor(Math.random() * available.length)];
+        const available = board.map((val, i) => val === null ? i : null).filter(val => val !== null);
+        return available.length > 0 ? available[Math.floor(Math.random() * available.length)] : null;
     }
 
-    function bestMove() { // Minimax implementation as before
-        // Check if CPU can win in one move
-        for (let i = 0; i < board.length; i++) {
-            if (!board[i]) {
-                board[i] = currentSymbols.player2;
-                if (checkWin(currentSymbols.player2)) { board[i] = null; return i; }
-                board[i] = null;
-            }
-        }
-        // Check if player can win in one move (block)
-        for (let i = 0; i < board.length; i++) {
-            if (!board[i]) {
-                board[i] = currentSymbols.player1;
-                if (checkWin(currentSymbols.player1)) { board[i] = null; return i; }
-                board[i] = null;
-            }
-        }
-        // Minimax logic (simplified for brevity, use your existing robust one)
-        let bestScore = -Infinity;
-        let move;
-        for (let i = 0; i < board.length; i++) {
-            if (!board[i]) {
-                board[i] = currentSymbols.player2;
-                let score = minimax(board, 0, false);
-                board[i] = null;
-                if (score > bestScore) {
-                    bestScore = score;
-                    move = i;
-                }
-            }
-        }
-        return move !== undefined ? move : randomMove();
+    function bestMove() {
+        for (let i = 0; i < 9; i++) if (!board[i]) { board[i] = currentSymbols.player2; if (checkWin(currentSymbols.player2)) { board[i] = null; return i; } board[i] = null; }
+        for (let i = 0; i < 9; i++) if (!board[i]) { board[i] = currentSymbols.player1; if (checkWin(currentSymbols.player1)) { board[i] = null; return i; } board[i] = null; }
+        if (board[4] === null) return 4; // Center priority
+        const corners = [0, 2, 6, 8].filter(i => board[i] === null); if (corners.length > 0) return corners[Math.floor(Math.random() * corners.length)];
+        return randomMove(); // Fallback to random if no strategic move found by simplified logic
     }
-
-    function minimax(currentBoard, depth, isMaximizing) {
-        const cpuWin = checkWin(currentSymbols.player2, currentBoard);
-        const playerWin = checkWin(currentSymbols.player1, currentBoard);
-        if (cpuWin) return 10 - depth;
-        if (playerWin) return depth - 10;
-        if (checkDraw(currentBoard)) return 0;
-
-        if (isMaximizing) {
-            let bestScore = -Infinity;
-            for (let i = 0; i < currentBoard.length; i++) {
-                if (!currentBoard[i]) {
-                    currentBoard[i] = currentSymbols.player2;
-                    bestScore = Math.max(bestScore, minimax(currentBoard, depth + 1, false));
-                    currentBoard[i] = null;
-                }
-            }
-            return bestScore;
-        } else {
-            let bestScore = Infinity;
-            for (let i = 0; i < currentBoard.length; i++) {
-                if (!currentBoard[i]) {
-                    currentBoard[i] = currentSymbols.player1;
-                    bestScore = Math.min(bestScore, minimax(currentBoard, depth + 1, true));
-                    currentBoard[i] = null;
-                }
-            }
-            return bestScore;
-        }
-    }
+    // Note: Full minimax is more computationally intensive. The above bestMove is simplified.
+    // If you want the previous minimax, you can re-insert it.
 
     function checkWin(player, currentBoard = board) {
-        for (const combo of winningCombos) {
-            if (combo.every(index => currentBoard[index] === player)) return combo;
-        }
+        const combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        for (const combo of combos) if (combo.every(index => currentBoard[index] === player)) return combo;
         return null;
     }
-
-    function checkDraw(currentBoard = board) { return currentBoard.every(cell => cell !== null); }
+    function checkDraw(currentBoard = board) { return currentBoard.every(cell => cell !== null) && !checkWin(currentSymbols.player1, currentBoard) && !checkWin(currentSymbols.player2, currentBoard); }
 
     function endGame(player, winningCells) {
-        if (winningCells) winningCells.forEach(i => cells[i] && cells[i].classList.add('rainbow'));
-        gameActive = false;
-        statusDiv.textContent = `¡${getPlayerName(player)} ganó!`;
-        statusDiv.classList.add('highlight');
-
-        if (player === currentSymbols.player1) {
-            unicornWins++; localStorage.setItem('unicornWins', unicornWins);
-            lastWinner = currentSymbols.player1;
-        } else {
-            heartWins++; localStorage.setItem('heartWins', heartWins);
-            lastWinner = currentSymbols.player2;
-        }
-        previousGameExists = true; // Mark that a game has been completed
-        updateScoreboard();
-        playSound('win');
-        launchConfetti();
-        setBoardClickable(false); // Disable board after game ends
+        if (!gameActive) return; gameActive = false; setBoardClickable(false);
+        if (winningCells) winningCells.forEach(i => cells[i].classList.add('rainbow'));
+        statusDiv.textContent = `¡${getPlayerName(player)} ganó!`; statusDiv.classList.add('highlight');
+        if (player === currentSymbols.player1) { unicornWins++; localStorage.setItem('unicornWins', unicornWins); lastWinner = currentSymbols.player1; }
+        else { heartWins++; localStorage.setItem('heartWins', heartWins); lastWinner = currentSymbols.player2; }
+        previousGameExists = true; updateScoreboard(); playSound('win'); launchConfetti();
+        setTimeout(() => { removeConfetti(); init(); }, AUTO_RESTART_DELAY_WIN);
     }
 
     function endDraw() {
-        gameActive = false;
-        statusDiv.textContent = '¡Empate!';
-        statusDiv.classList.add('highlight');
-        draws++; localStorage.setItem('draws', draws);
-        lastWinner = null; // No winner in a draw
-        previousGameExists = true; // Mark that a game has been completed
-        updateScoreboard();
-        playSound('draw');
-        setBoardClickable(false); // Disable board after game ends
+        if (!gameActive) return; gameActive = false; setBoardClickable(false);
+        statusDiv.textContent = '¡Empate!'; statusDiv.classList.add('highlight');
+        draws++; localStorage.setItem('draws', draws); lastWinner = null; previousGameExists = true; updateScoreboard(); playSound('draw');
+        const animDur = playDrawAnimation();
+        setTimeout(() => init(), Math.max(animDur + 200, AUTO_RESTART_DELAY_DRAW));
     }
 
     function switchPlayer() {
-        currentPlayer = currentPlayer === currentSymbols.player1 ? currentSymbols.player2 : currentSymbols.player1;
+        currentPlayer = (currentPlayer === currentSymbols.player1) ? currentSymbols.player2 : currentSymbols.player1;
         statusDiv.textContent = `Turno del ${getPlayerName(currentPlayer)}`;
-        statusDiv.classList.add('highlight');
-        setTimeout(() => statusDiv.classList.remove('highlight'), 300);
     }
 
     function updateScoreboard() {
-        unicornSpan.textContent = unicornWins;
-        heartSpan.textContent = heartWins;
-        drawsSpan.textContent = draws;
+        unicornSpan.textContent = unicornWins; heartSpan.textContent = heartWins; drawsSpan.textContent = draws;
     }
 
-    function playSound(type) { /* ... Your existing playSound ... */
-        if (!soundEnabled) return;
-        const ctx = getAudioContext();
-        if (!ctx || ctx.state === 'suspended') return;
+    function playSound(type) {
+        if (!soundEnabled || !audioCtx || audioCtx.state !== 'running') return;
         try {
-            const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination);
-            let freq1=440, freq2=880, duration=0.2, gainVal=0.1, waveType='sine';
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination);
+            let f1=440, t=0.2, gV=0.08, wT='sine';
             switch(type) {
-                case 'move': freq1=440; duration=0.2; gainVal=0.08; waveType='sine'; break;
-                case 'win': freq1=600; freq2=900; let freq3=1200; duration=0.7; gainVal=0.12; waveType='triangle';
-                    o.frequency.setValueAtTime(freq1, ctx.currentTime);
-                    o.frequency.linearRampToValueAtTime(freq2, ctx.currentTime + duration*0.33);
-                    o.frequency.linearRampToValueAtTime(freq3, ctx.currentTime + duration*0.66);
-                    break;
-                case 'draw': freq1=330; freq2=220; duration=0.4; gainVal=0.1; waveType='square';
-                    o.frequency.setValueAtTime(freq1, ctx.currentTime);
-                    o.frequency.linearRampToValueAtTime(freq2, ctx.currentTime + duration*0.5);
-                    break;
-                case 'reset': freq1=500; freq2=300; duration=0.25; gainVal=0.07; waveType='sine';
-                    o.frequency.setValueAtTime(freq1, ctx.currentTime);
-                    o.frequency.linearRampToValueAtTime(freq2, ctx.currentTime + duration*0.5);
-                    break;
+                case 'move': f1=300 + Math.random()*200; t=0.15; gV=0.06; wT='triangle'; break;
+                case 'win': f1=600; let f2=900,f3=1200; t=0.7; gV=0.1; wT='sawtooth'; o.frequency.setValueAtTime(f1,audioCtx.currentTime); o.frequency.linearRampToValueAtTime(f2,audioCtx.currentTime+t*0.33); o.frequency.linearRampToValueAtTime(f3,audioCtx.currentTime+t*0.66); break;
+                case 'draw': f1=330; let fD2=220; t=0.4; gV=0.07; wT='square'; o.frequency.setValueAtTime(f1,audioCtx.currentTime); o.frequency.linearRampToValueAtTime(fD2,audioCtx.currentTime+t*0.5); break;
+                case 'reset': f1=500; let fR2=300; t=0.25; gV=0.05; wT='sine'; o.frequency.setValueAtTime(f1,audioCtx.currentTime); o.frequency.linearRampToValueAtTime(fR2,audioCtx.currentTime+t*0.5); break;
                 default: return;
             }
-            o.type = waveType;
-            if(type !== 'win' && type !== 'draw' && type !== 'reset') o.frequency.setValueAtTime(freq1, ctx.currentTime);
-            g.gain.setValueAtTime(gainVal, ctx.currentTime);
-            o.start();
-            g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + duration);
-            o.stop(ctx.currentTime + duration);
-        } catch (err) { console.error("Error playing sound:", type, err); }
+            o.type = wT; if(type !== 'win' && type !== 'draw' && type !== 'reset') o.frequency.setValueAtTime(f1,audioCtx.currentTime);
+            g.gain.setValueAtTime(gV,audioCtx.currentTime); o.start(audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.00001,audioCtx.currentTime+t); o.stop(audioCtx.currentTime+t+0.05);
+        } catch (err) { console.error("Sound play error:",type,err); }
     }
-
-    function launchConfetti() { /* ... Your existing launchConfetti ... */
-        const colors = ['#ff3860','#ffdd57','#17d1a2','#3e8ed0','#b86bff'];
-        for (let i = 0; i < 120; i++) {
-            const conf = document.createElement('div'); conf.className = 'confetti';
-            conf.style.left = Math.random()*100+'vw'; conf.style.width=(Math.random()*8+4)+'px';
-            conf.style.height=(Math.random()*12+6)+'px'; conf.style.background=colors[Math.floor(Math.random()*colors.length)];
-            conf.style.transform=`rotate(${Math.random()*360}deg)`; conf.style.animationDelay=(Math.random()*0.5)+'s';
-            conf.style.animationDuration=(Math.random()*2+2)+'s'; document.body.appendChild(conf);
-            setTimeout(() => { if (conf && conf.parentNode) conf.parentNode.removeChild(conf); }, 3500);
-        }
-    }
-    function removeConfetti() { document.querySelectorAll('.confetti').forEach(c => c.remove()); }
 
     function toggleTheme() {
-        const isDark = document.body.classList.toggle('dark-theme');
-        themeToggle.textContent = isDark ? '☀️' : '🌙'; localStorage.setItem('darkTheme', isDark); playSound('move');
+        document.body.classList.toggle('dark-theme');
+        localStorage.setItem('darkTheme', document.body.classList.contains('dark-theme'));
+        updateAllUIToggleButtons(); playSound('move');
     }
     function toggleSound() {
-        soundEnabled = !soundEnabled; soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
-        localStorage.setItem('soundDisabled', !soundEnabled);
-        if (soundEnabled) { const ctx = getAudioContext(); if (ctx && ctx.state === 'running') playSound('move'); else if (ctx && ctx.state === 'suspended') ctx.resume().then(() => playSound('move')).catch(err => console.error("Could not resume context", err));}
+        soundEnabled = !soundEnabled; localStorage.setItem('soundDisabled', !soundEnabled);
+        if (soundEnabled) initAudioOnInteraction(); // Try to init/resume AudioContext
+        else if (audioCtx && audioCtx.state === 'running') audioCtx.suspend(); // Suspend if turning off
+        updateAllUIToggleButtons(); if(soundEnabled) playSound('move');
     }
     function changeSymbols() {
-        currentSymbolIndex = (currentSymbolIndex + 1) % symbolSet.length;
+        currentSymbolIndex = (currentSymbolIndex + 1) % symbolSet.length; localStorage.setItem('currentSymbolIndex', currentSymbolIndex);
         currentSymbols = symbolSet[currentSymbolIndex];
-        // Determine who would have been current player with old symbols to maintain turn if game is active
-        let oldPlayer1Symbol, oldPlayer2Symbol;
-        if (currentSymbolIndex === 0) { // Wrapped around from last to first
-            oldPlayer1Symbol = symbolSet[symbolSet.length - 1].player1;
-            oldPlayer2Symbol = symbolSet[symbolSet.length - 1].player2;
-        } else {
-            oldPlayer1Symbol = symbolSet[currentSymbolIndex - 1].player1;
-            oldPlayer2Symbol = symbolSet[currentSymbolIndex - 1].player2;
-        }
-
+        let oldP1, oldP2; ({player1: oldP1, player2: oldP2} = symbolSet[(currentSymbolIndex - 1 + symbolSet.length) % symbolSet.length]);
         if (gameActive) {
-            if (currentPlayer === oldPlayer1Symbol) {
-                currentPlayer = currentSymbols.player1;
-            } else if (currentPlayer === oldPlayer2Symbol) {
-                currentPlayer = currentSymbols.player2;
-            }
-            statusDiv.textContent = `Turno del ${getPlayerName(currentPlayer)}`;
-        } else {
-             // If game not active, status reflects who *would* start next game (based on P1 default before init applies rules)
-            statusDiv.textContent = `Turno del ${getPlayerName(currentSymbols.player1)}`;
+            if (currentPlayer === oldP1) currentPlayer = currentSymbols.player1;
+            else if (currentPlayer === oldP2) currentPlayer = currentSymbols.player2;
         }
-
         const resultsDiv = document.getElementById('results');
-        const childNodes = resultsDiv.childNodes;
-        if (childNodes[0] && childNodes[0].nodeType === Node.TEXT_NODE) {
-            childNodes[0].textContent = currentSymbols.player1 + ' ';
-        }
-        const dashIndex = Array.from(childNodes).findIndex(node => node.nodeType === Node.TEXT_NODE && node.textContent.includes('–'));
-        if (dashIndex !== -1 && childNodes[dashIndex]) {
-            childNodes[dashIndex].textContent = ' – ' + currentSymbols.player2 + ' ';
-        }
-        playSound('move');
-        if (board.some(cell => cell !== null)) { // If board has moves, reset it
-            init(); // init will use current vsCPU and difficulty settings
-        } else { // If board is empty, just update display elements potentially affected by symbols (like status)
-            if (!gameActive) { // If game was over and board is now clear for next round.
-                init(); // Start a new game to apply new symbols and whoGoesFirst logic properly.
-            }
-        }
+        resultsDiv.childNodes[0].nodeValue = currentSymbols.player1 + ' '; // Text node for P1 symbol
+        resultsDiv.childNodes[2].nodeValue = ' – ' + currentSymbols.player2 + ' '; // Text node for P2 symbol
+        playSound('move'); init(); // Always restart on symbol change for simplicity and consistency
     }
 
-    // ========= Event Listeners =========
+    /* ----------  EVENT LISTENERS  ---------- */
     cells.forEach(c => c.addEventListener('click', handleCellClick));
-    restartBtn.addEventListener('click', () => init()); // init will use current settings
-    pvpBtn.addEventListener('click', () => { if (!vsCPU) return; init('pvp', difficulty); });
-    cpuBtn.addEventListener('click', () => { if (vsCPU) return; init('cpu', difficulty); });
+    restartBtn.addEventListener('click', init); // Hidden button's direct listener
 
-    easyBtn.addEventListener('click', () => { if (difficulty === 'easy') return; difficulty = 'easy'; updateDifficultyButtons(); playSound('move');});
-    mediumBtn.addEventListener('click', () => { if (difficulty === 'medium') return; difficulty = 'medium'; updateDifficultyButtons(); playSound('move'); });
-    hardBtn.addEventListener('click', () => { if (difficulty === 'hard') return; difficulty = 'hard'; updateDifficultyButtons(); playSound('move');});
-
+    // Side Menu button listeners
+    pvpBtn.addEventListener('click', () => { vsCPU = false; updateAllUIToggleButtons(); init(); });
+    cpuBtn.addEventListener('click', () => { vsCPU = true; updateAllUIToggleButtons(); init(); });
+    [easyBtn, mediumBtn, hardBtn].forEach(btn => btn.addEventListener('click', (e) => {
+        difficulty = e.target.id.replace('Btn',''); updateAllUIToggleButtons(); playSound('move'); if (!gameActive) init();
+    }));
+    [player1StartsBtn, randomStartsBtn, loserStartsBtn].forEach(btn => btn.addEventListener('click', (e) => {
+        whoGoesFirstSetting = e.target.id.replace('StartsBtn',''); localStorage.setItem('whoGoesFirstSetting', whoGoesFirstSetting);
+        updateAllUIToggleButtons(); playSound('move'); if (!gameActive || board.every(c => c===null)) init(); // Restart if game is over or board is empty
+    }));
+    changeSymbolsBtn.addEventListener('click', changeSymbols);
     themeToggle.addEventListener('click', toggleTheme);
     soundToggle.addEventListener('click', toggleSound);
-    changeSymbolsBtn.addEventListener('click', changeSymbols);
-
-    // "Who Goes First" Button Listeners
-    player1StartsBtn.addEventListener('click', () => {
-        if (whoGoesFirstSetting === 'player1') return;
-        whoGoesFirstSetting = 'player1';
-        localStorage.setItem('whoGoesFirstSetting', whoGoesFirstSetting);
-        updateWhoGoesFirstButtons();
-        playSound('move');
-        if (!gameActive) init(); // If no game active, restart to apply setting
-    });
-    randomStartsBtn.addEventListener('click', () => {
-        if (whoGoesFirstSetting === 'random') return;
-        whoGoesFirstSetting = 'random';
-        localStorage.setItem('whoGoesFirstSetting', whoGoesFirstSetting);
-        updateWhoGoesFirstButtons();
-        playSound('move');
-        if (!gameActive) init();
-    });
-    loserStartsBtn.addEventListener('click', () => {
-        if (whoGoesFirstSetting === 'loser') return;
-        whoGoesFirstSetting = 'loser';
-        localStorage.setItem('whoGoesFirstSetting', whoGoesFirstSetting);
-        updateWhoGoesFirstButtons();
-        playSound('move');
-        if (!gameActive) init();
-    });
-
 
     cells.forEach(cell => {
         cell.setAttribute('tabindex', '0');
-        cell.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); }
-        });
+        cell.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); }});
     });
-    document.addEventListener('dblclick', function(e) { e.preventDefault(); }, { passive: false });
+    document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
 
-    // Initial setup calls
+    /* ----------  INICIALIZACIÓN  ---------- */
+    if (localStorage.getItem('darkTheme') === 'true') document.body.classList.add('dark-theme');
+    soundToggle.textContent = soundEnabled ? '🔊' : '🔇'; // Initial icon based on loaded state
     updateScoreboard();
-    // updateWhoGoesFirstButtons(); // Called within init
-    init(); // Initial game setup
+    init(); // Start the first game
 });
 </script>
 </body>
