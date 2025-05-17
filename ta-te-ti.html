@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ta‑Te‑Ti Deluxe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --pink-light: #ffc0cb;
+            --pink: #ff69b4;
+            --pink-dark: #ff1493;
+            --pink-extra: #ffe4e1;
+            --border-radius: 12px;
+        }
+        * { box-sizing: border-box; }
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            min-height: 100vh;
+            margin: 0;
+            background: var(--pink-light);
+            font-family: "Bubblegum Sans", cursive;
+            color: var(--pink);
+            overflow-x: hidden;
+            transition: background-color 0.5s;
+        }
+        h1 {
+             margin: 0.2em 0 0;
+             font-size: 3rem;
+             text-shadow: 2px 2px rgba(0,0,0,0.1);
+            animation: bounce 2s infinite alternate;
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+        #status {
+             font-size: 1.6rem;
+             min-height: 2.2rem;
+             text-align: center;
+            transition: transform 0.3s;
+        }
+        #status.highlight {
+            transform: scale(1.2);
+            color: var(--pink-dark);
+        }
+        #game {
+            display: grid;
+            grid-template-columns: repeat(3, 90px);
+            grid-template-rows: repeat(3, 90px);
+            gap: 8px;
+            padding: 10px;
+            border: 6px solid var(--pink);
+            background: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            user-select: none;
+            transition: transform 0.3s ease;
+        }
+        #game:hover {
+            transform: scale(1.02);
+        }
+        .cell {
+            width: 90px; height: 90px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 3.2rem;
+            background: var(--pink-extra);
+            border: 2px solid #ffb6c1;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+        .cell:hover {
+             background: var(--pink-light);
+             transform: translateY(-3px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        .cell.disabled { cursor: default; }
+        .cell span {
+            display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        .cell.mark-animation span {
+            transform: scale(1.3);
+        }
+        .cell.rainbow::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet, red);
+            background-size: 400% 400%;
+            animation: rainbowBG 2s linear infinite;
+            z-index: 0;
+            opacity: 0.7;
+        }
+        .cell.rainbow > span {
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 5px white;
+        }
+        @keyframes rainbowBG {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .confetti {
+            position: fixed;
+            top: -10px;
+            width: 8px;
+            height: 12px;
+            background: red;
+            opacity: 0.9;
+            border-radius: 2px;
+            pointer-events: none;
+            animation: fall 3s linear forwards;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotateZ(360deg);
+                opacity: 0;
+            }
+        }
+        .controls, .mode, .difficulty {
+            display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+            margin-top: 5px;
+        }
+        button {
+            padding: 10px 22px;
+            font-size: 1rem;
+            background: var(--pink);
+            color: #fff;
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: "Bubblegum Sans", cursive;
+        }
+        button:hover { background: var(--pink-dark); transform: translateY(-2px); }
+        button:active { transform: translateY(0); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        button.mode-btn.active, button.difficulty-btn.active {
+             outline: 3px solid var(--pink-dark);
+             background: var(--pink-dark);
+        }
+        #results {
+             font-size: 1.2rem;
+             text-align: center;
+             margin-top: 10px;
+            background: white;
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            border: 2px dashed var(--pink);
+        }
+        #results span {
+             display: inline-block;
+             min-width: 2ch;
+             font-weight: bold;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+        body.dark-theme {
+            background: #2b2b2b;
+            color: #ffc0cb;
+        }
+        body.dark-theme #game {
+            border-color: var(--pink-dark);
+            background: #3d3d3d;
+        }
+        body.dark-theme .cell {
+            background: #4a4a4a;
+            border-color: #5a5a5a;
+            color: white;
+        }
+        body.dark-theme .cell:hover {
+            background: #5a5a5a;
+        }
+        body.dark-theme #results {
+            background: #3d3d3d;
+            border-color: var(--pink-dark);
+            color: white;
+        }
+        .sound-toggle {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+        @media (max-width: 400px) {
+            h1 { font-size: 2.5rem; }
+            #game {
+                grid-template-columns: repeat(3, 70px);
+                grid-template-rows: repeat(3, 70px);
+            }
+            .cell {
+                width: 70px; height: 70px;
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">🌙</button>
+    <button class="sound-toggle" id="soundToggle" aria-label="Activar/Desactivar sonido">🔊</button>
+
+    <h1>Ta‑Te‑Ti</h1>
+    <div id="status" aria-live="polite">Turno del 🦄 Unicornio</div>
+    <div id="game" role="grid" aria-label="Tablero de juego">
+        <div class="cell" role="button" aria-label="Celda 1" data-index="0"><span></span></div>
+        <div class="cell" role="button" aria-label="Celda 2" data-index="1"><span></span></div>
+        <div class="cell" role="button" aria-label="Celda 3" data-index="2"><span></span></div>
+        <div class="cell" role="button" aria-label="Celda 4" data-index="3"><span></span></div>
+        <div class="cell" role="button" aria-label="Celda 5" data-index="4"><span></span></div>
+        <div class="cell" role="button" aria-label="Celda 6" data-index="5"><span></span></div>
+        <div class="cell" role="button" aria-label="Celda 7" data-index="6"><span></span></div>
+        <div class="cell" role="button" aria-label="Celda 8" data-index="7"><span></span></div>
+        <div class="cell" role="button" aria-label="Celda 9" data-index="8"><span></span></div>
+    </div>
+    <div class="mode" aria-label="Seleccionar modo">
+        <button id="pvpBtn" class="mode-btn active">Jugador vs Jugador</button>
+        <button id="cpuBtn" class="mode-btn">Jugador vs CPU</button>
+    </div>
+    <div class="difficulty" aria-label="Seleccionar dificultad" style="display: none;">
+        <button id="easyBtn" class="difficulty-btn">Fácil</button>
+        <button id="mediumBtn" class="difficulty-btn active">Normal</button>
+        <button id="hardBtn" class="difficulty-btn">Difícil</button>
+    </div>
+    <div class="controls">
+        <button id="restartBtn">Reiniciar</button>
+        <button id="changeSymbolsBtn">Cambiar símbolos</button>
+    </div>
+    <div id="results">
+        🦄 <span id="unicornWins">0</span> – ❤️ <span id="heartWins">0</span> – 🤝 <span id="draws">0</span>
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // ======== State =========
+    const cells = document.querySelectorAll('.cell');
+    const statusDiv = document.getElementById('status');
+    const restartBtn = document.getElementById('restartBtn');
+    const pvpBtn = document.getElementById('pvpBtn');
+    const cpuBtn = document.getElementById('cpuBtn');
+    const difficultyDiv = document.querySelector('.difficulty');
+    const easyBtn = document.getElementById('easyBtn');
+    const mediumBtn = document.getElementById('mediumBtn');
+    const hardBtn = document.getElementById('hardBtn');
+    const unicornSpan = document.getElementById('unicornWins');
+    const heartSpan = document.getElementById('heartWins');
+    const drawsSpan = document.getElementById('draws');
+    const themeToggle = document.getElementById('themeToggle');
+    const soundToggle = document.getElementById('soundToggle');
+    const changeSymbolsBtn = document.getElementById('changeSymbolsBtn');
+
+    let board, currentPlayer, gameActive, vsCPU, difficulty;
+    let soundEnabled = true;
+    let symbolSet = [
+        { player1: '🦄', player2: '❤️' },
+        { player1: '🐱', player2: '🐶' },
+        { player1: '🌞', player2: '🌙' },
+        { player1: '❌', player2: '⭕' }
+    ];
+    let currentSymbolIndex = 0;
+    let currentSymbols = symbolSet[currentSymbolIndex];
+
+    let unicornWins = +localStorage.getItem('unicornWins') || 0;
+    let heartWins = +localStorage.getItem('heartWins') || 0;
+    let draws = +localStorage.getItem('draws') || 0;
+
+    // ======== AudioContext Management (Improved) =========
+    let audioCtx;
+    function getAudioContext() {
+        if (!audioCtx) {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.error("AudioContext not supported or could not be created.", e);
+                soundEnabled = false; // Disable sound if context fails
+                soundToggle.textContent = '🔇';
+                localStorage.setItem('soundDisabled', true);
+                return null;
+            }
+        }
+        // Check if context is suspended (e.g., due to autoplay policies)
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(err => {
+                console.error("Failed to resume AudioContext. Disabling sound.", err);
+                soundEnabled = false;
+                soundToggle.textContent = '🔇';
+                localStorage.setItem('soundDisabled', true);
+            });
+        }
+        return audioCtx;
+    }
+
+
+    // Load theme preference
+    const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
+    if (isDarkTheme) {
+        document.body.classList.add('dark-theme');
+        themeToggle.textContent = '☀️';
+    }
+
+    // Load sound preference
+    const isSoundDisabled = localStorage.getItem('soundDisabled') === 'true';
+    if (isSoundDisabled) {
+        soundEnabled = false;
+        soundToggle.textContent = '🔇';
+    }
+
+    const winningCombos = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+    ];
+
+    // ========= Inicialización =========
+    updateScoreboard();
+    init(); // Initial game setup
+
+    function init(mode = 'pvp', diff = 'medium') {
+        removeConfetti();
+        board = Array(9).fill(null);
+        currentPlayer = currentSymbols.player1;
+        gameActive = true;
+        vsCPU = mode === 'cpu';
+        difficulty = diff;
+
+        cells.forEach(c => {
+            if (c && c.querySelector('span')) { // Add null check for robustness
+                c.querySelector('span').textContent = '';
+            }
+            if (c) { // Add null check
+                 c.classList.remove('rainbow', 'disabled', 'mark-animation');
+            }
+        });
+
+        statusDiv.textContent = `Turno del ${getPlayerName(currentPlayer)}`;
+        statusDiv.classList.add('highlight');
+        setTimeout(() => statusDiv.classList.remove('highlight'), 300);
+
+        updateModeButtons();
+        difficultyDiv.style.display = vsCPU ? 'flex' : 'none';
+        updateDifficultyButtons();
+
+        const gameBoard = document.getElementById('game');
+        gameBoard.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            gameBoard.style.transform = '';
+        }, 200);
+
+        playSound('reset');
+    }
+
+    function getPlayerName(symbol) {
+        if (symbol === currentSymbols.player1) {
+            return `${symbol} ${symbol === '🦄' ? 'Unicornio' :
+                                symbol === '🐱' ? 'Gatito' :
+                                symbol === '🌞' ? 'Sol' : 'Equis'}`;
+        } else {
+            return `${symbol} ${symbol === '❤️' ? 'Corazón' :
+                                symbol === '🐶' ? 'Perrito' :
+                                symbol === '🌙' ? 'Luna' : 'Círculo'}`;
+        }
+    }
+
+    function updateModeButtons() {
+        pvpBtn.classList.toggle('active', !vsCPU);
+        cpuBtn.classList.toggle('active', vsCPU);
+    }
+
+    function updateDifficultyButtons() {
+        easyBtn.classList.toggle('active', difficulty === 'easy');
+        mediumBtn.classList.toggle('active', difficulty === 'medium');
+        hardBtn.classList.toggle('active', difficulty === 'hard');
+    }
+
+    // ========= Lógica del juego =========
+    function handleCellClick(e) {
+        if (!e.currentTarget || typeof e.currentTarget.dataset === 'undefined') {
+            console.error('Error: Click target is invalid or missing dataset.', e.target);
+            return;
+        }
+        const idxStr = e.currentTarget.dataset.index;
+        if (typeof idxStr === 'undefined') {
+            console.error('Error: data-index attribute is missing on clicked cell.', e.currentTarget);
+            return;
+        }
+        const idx = +idxStr;
+
+        if (isNaN(idx)) {
+            console.error('Error: Parsed index is NaN. data-index value:', idxStr, e.currentTarget);
+            return;
+        }
+
+        if (!gameActive || board[idx] !== null) { // Explicitly check for null
+            return;
+        }
+
+        makeMove(idx, currentPlayer);
+        const winInfo = checkWin(currentPlayer); // Renamed from 'win' to avoid conflict with window.win
+
+        if (winInfo) return endGame(currentPlayer, winInfo);
+        if (checkDraw()) return endDraw();
+
+        switchPlayer();
+        if (vsCPU && currentPlayer === currentSymbols.player2 && gameActive) {
+            setTimeout(cpuMove, 700);
+        }
+    }
+
+    function makeMove(idx, player) {
+        board[idx] = player;
+        const cell = cells[idx];
+        if (!cell) { // Defensive check
+            console.error("Error: Cell not found at index", idx);
+            return;
+        }
+        const span = cell.querySelector('span');
+        if (!span) { // Defensive check
+            console.error("Error: Span not found in cell at index", idx, cell);
+            return;
+        }
+        span.textContent = player;
+
+        cell.classList.add('disabled', 'mark-animation');
+        setTimeout(() => cell.classList.remove('mark-animation'), 300);
+
+        playSound('move');
+    }
+
+    function cpuMove() {
+        let idx;
+        switch(difficulty) {
+            case 'easy':
+                idx = randomMove();
+                break;
+            case 'medium':
+                idx = Math.random() < 0.7 ? bestMove() : randomMove();
+                break;
+            case 'hard':
+            default:
+                idx = bestMove();
+                break;
+        }
+        if (idx === undefined || idx === null) return;
+
+        makeMove(idx, currentSymbols.player2);
+        const winInfo = checkWin(currentSymbols.player2);
+        if (winInfo) return endGame(currentSymbols.player2, winInfo);
+        if (checkDraw()) return endDraw();
+        switchPlayer();
+    }
+
+    function randomMove() {
+        const available = board.map((val, idx) => val === null ? idx : null).filter(val => val !== null);
+        if (available.length === 0) return null;
+        return available[Math.floor(Math.random() * available.length)];
+    }
+
+    function bestMove() {
+        let bestScore = -Infinity, move;
+        for (let i = 0; i < board.length; i++) {
+            if (!board[i]) {
+                board[i] = currentSymbols.player2;
+                if (checkWin(currentSymbols.player2)) {
+                    board[i] = null;
+                    return i;
+                }
+                board[i] = null;
+            }
+        }
+        for (let i = 0; i < board.length; i++) {
+            if (!board[i]) {
+                board[i] = currentSymbols.player1;
+                if (checkWin(currentSymbols.player1)) {
+                    board[i] = null;
+                    return i;
+                }
+                board[i] = null;
+            }
+        }
+        board.forEach((v, i) => {
+            if (!v) {
+                board[i] = currentSymbols.player2;
+                const score = minimax(board, 0, false);
+                board[i] = null;
+                if (score > bestScore) {
+                     bestScore = score;
+                     move = i;
+                 }
+            }
+        });
+        return move !== undefined ? move : randomMove(); // Fallback if no best move found
+    }
+
+    function minimax(currentBoard, depth, isMaximizing) { // Renamed board to currentBoard
+        const cpuWin = checkWin(currentSymbols.player2, currentBoard); // Pass board
+        const playerWin = checkWin(currentSymbols.player1, currentBoard); // Pass board
+
+        if (cpuWin) return 10 - depth;
+        if (playerWin) return depth - 10;
+        if (checkDraw(currentBoard)) return 0; // Pass board
+
+        if (isMaximizing) {
+            let bestScore = -Infinity;
+            for (let i = 0; i < currentBoard.length; i++) {
+                if (!currentBoard[i]) {
+                    currentBoard[i] = currentSymbols.player2;
+                    const score = minimax(currentBoard, depth + 1, false);
+                    currentBoard[i] = null;
+                    bestScore = Math.max(bestScore, score);
+                }
+            }
+            return bestScore;
+        } else {
+            let bestScore = Infinity;
+            for (let i = 0; i < currentBoard.length; i++) {
+                if (!currentBoard[i]) {
+                    currentBoard[i] = currentSymbols.player1;
+                    const score = minimax(currentBoard, depth + 1, true);
+                    currentBoard[i] = null;
+                    bestScore = Math.min(bestScore, score);
+                }
+            }
+            return bestScore;
+        }
+    }
+
+    function checkWin(player, currentBoard = board) { // Added currentBoard param, default to global board
+        for (const combo of winningCombos) {
+            const [a, b, c] = combo;
+            if (currentBoard[a] === player && currentBoard[b] === player && currentBoard[c] === player) {
+                return combo;
+            }
+        }
+        return null;
+    }
+
+    function checkDraw(currentBoard = board) { // Added currentBoard param
+         return currentBoard.every(cell => cell !== null); // Check for non-null
+    }
+
+    function endGame(player, winningCells) {
+        if (winningCells && Array.isArray(winningCells)) {
+            winningCells.forEach(i => cells[i] && cells[i].classList.add('rainbow')); // Add null check for cells[i]
+        }
+        gameActive = false;
+        statusDiv.textContent = `¡${getPlayerName(player)} ganó!`;
+        statusDiv.classList.add('highlight');
+
+        if (player === currentSymbols.player1) {
+            unicornWins++;
+            localStorage.setItem('unicornWins', unicornWins);
+        } else {
+            heartWins++;
+            localStorage.setItem('heartWins', heartWins);
+        }
+        updateScoreboard();
+        playSound('win');
+        launchConfetti();
+    }
+
+    function endDraw() {
+        gameActive = false;
+        statusDiv.textContent = '¡Empate!';
+        statusDiv.classList.add('highlight');
+        draws++;
+        localStorage.setItem('draws', draws);
+        updateScoreboard();
+        playSound('draw');
+    }
+
+    function switchPlayer() {
+        currentPlayer = currentPlayer === currentSymbols.player1 ? currentSymbols.player2 : currentSymbols.player1;
+        statusDiv.textContent = `Turno del ${getPlayerName(currentPlayer)}`;
+        statusDiv.classList.add('highlight');
+        setTimeout(() => statusDiv.classList.remove('highlight'), 300);
+    }
+
+    function updateScoreboard() {
+        unicornSpan.textContent = unicornWins;
+        heartSpan.textContent = heartWins;
+        drawsSpan.textContent = draws;
+    }
+
+    // ========= Audio (Improved) =========
+    function playSound(type) {
+        if (!soundEnabled) return;
+        const ctx = getAudioContext(); // Use the managed AudioContext
+        if (!ctx || ctx.state === 'suspended') { // Do not play if context is not available or suspended
+            // console.log('AudioContext not ready, skipping sound for:', type);
+            return;
+        }
+
+        try {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.connect(g);
+            g.connect(ctx.destination);
+
+            switch(type) {
+                case 'move':
+                    o.type = 'sine';
+                    o.frequency.setValueAtTime(440, ctx.currentTime);
+                    g.gain.setValueAtTime(0.1, ctx.currentTime); // Reduced gain a bit
+                    o.start();
+                    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.2);
+                    o.stop(ctx.currentTime + 0.2);
+                    break;
+                case 'win':
+                    o.type = 'triangle';
+                    o.frequency.setValueAtTime(800, ctx.currentTime);
+                    g.gain.setValueAtTime(0.15, ctx.currentTime); // Reduced gain
+                    o.start();
+                    o.frequency.setValueAtTime(1000, ctx.currentTime + 0.1);
+                    o.frequency.setValueAtTime(1200, ctx.currentTime + 0.2);
+                    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.7);
+                    o.stop(ctx.currentTime + 0.7);
+                    break;
+                case 'draw':
+                    o.type = 'square';
+                    o.frequency.setValueAtTime(330, ctx.currentTime);
+                    g.gain.setValueAtTime(0.1, ctx.currentTime); // Reduced gain
+                    o.start();
+                    o.frequency.setValueAtTime(220, ctx.currentTime + 0.15);
+                    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+                    o.stop(ctx.currentTime + 0.4);
+                    break;
+                case 'reset':
+                    o.type = 'sine';
+                    o.frequency.setValueAtTime(600, ctx.currentTime);
+                    g.gain.setValueAtTime(0.08, ctx.currentTime); // Reduced gain
+                    o.start();
+                    o.frequency.setValueAtTime(400, ctx.currentTime + 0.08);
+                    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
+                    o.stop(ctx.currentTime + 0.25);
+                    break;
+            }
+        } catch (err) {
+            console.error("Error playing sound:", type, err);
+            // Optionally disable sound further if errors persist
+            // soundEnabled = false;
+            // soundToggle.textContent = '🔇';
+        }
+    }
+
+    // ========= Confetti =========
+    function launchConfetti() {
+        const colors = ['#ff3860','#ffdd57','#17d1a2','#3e8ed0','#b86bff'];
+        for (let i = 0; i < 120; i++) {
+            const conf = document.createElement('div');
+            conf.className = 'confetti';
+            conf.style.left = Math.random() * 100 + 'vw';
+            conf.style.width = (Math.random() * 8 + 4) + 'px';
+            conf.style.height = (Math.random() * 12 + 6) + 'px';
+            conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+            conf.style.transform = `rotate(${Math.random() * 360}deg)`;
+            conf.style.animationDelay = (Math.random() * 0.5) + 's';
+            conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(conf);
+            setTimeout(() => {
+                if (conf && conf.parentNode) {
+                    conf.parentNode.removeChild(conf);
+                }
+            }, 3500);
+        }
+    }
+    function removeConfetti() {
+        document.querySelectorAll('.confetti').forEach(c => c.remove());
+    }
+
+    function toggleTheme() {
+        const isDark = document.body.classList.toggle('dark-theme');
+        themeToggle.textContent = isDark ? '☀️' : '🌙';
+        localStorage.setItem('darkTheme', isDark);
+        playSound('move');
+    }
+
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+        localStorage.setItem('soundDisabled', !soundEnabled);
+        if (soundEnabled) {
+            // Ensure AudioContext is ready when enabling sound
+            const ctx = getAudioContext();
+            if (ctx && ctx.state === 'running') {
+                 playSound('move'); // Play a sound to confirm
+            } else if (ctx && ctx.state === 'suspended') {
+                ctx.resume().then(() => playSound('move')).catch(err => console.error("Could not resume context on sound toggle", err));
+            }
+        }
+    }
+
+    function changeSymbols() {
+        currentSymbolIndex = (currentSymbolIndex + 1) % symbolSet.length;
+        currentSymbols = symbolSet[currentSymbolIndex];
+        if (gameActive) {
+            // Update currentPlayer if game is active, to ensure consistency if symbols change mid-turn assignment
+            // This assumes player1 always starts. If player2 could start, this needs more logic.
+            // For simplicity, we re-evaluate based on the current internal player (P1 or P2)
+            const wasPlayer1Turn = currentPlayer === symbolSet[(currentSymbolIndex - 1 + symbolSet.length) % symbolSet.length].player1;
+            currentPlayer = wasPlayer1Turn ? currentSymbols.player1 : currentSymbols.player2;
+            statusDiv.textContent = `Turno del ${getPlayerName(currentPlayer)}`;
+        } else {
+             // If game is not active, but we want to update the placeholder for the next game's starting player
+             statusDiv.textContent = `Turno del ${getPlayerName(currentSymbols.player1)}`;
+        }
+
+
+        const resultsDiv = document.getElementById('results');
+        const symbolElements = resultsDiv.childNodes;
+        symbolElements[0].textContent = currentSymbols.player1 + ' ';
+        const dashIndex = Array.from(symbolElements).findIndex(node =>
+            node.nodeType === Node.TEXT_NODE && node.textContent.includes('–'));
+        if (dashIndex !== -1 && symbolElements[dashIndex + 1]) {
+            symbolElements[dashIndex + 1].textContent = ' ' + currentSymbols.player2 + ' ';
+        }
+        playSound('move');
+        if (board.some(cell => cell !== null)) {
+            init(vsCPU ? 'cpu' : 'pvp', difficulty);
+        }
+    }
+
+    // ========= Event Listeners =========
+    cells.forEach(c => c.addEventListener('click', handleCellClick));
+    restartBtn.addEventListener('click', () => init(vsCPU ? 'cpu' : 'pvp', difficulty));
+    pvpBtn.addEventListener('click', () => { if (!vsCPU) return; init('pvp', difficulty); }); // Only init if mode changes
+    cpuBtn.addEventListener('click', () => { if (vsCPU) return; init('cpu', difficulty); }); // Only init if mode changes
+
+    easyBtn.addEventListener('click', () => { if (difficulty === 'easy') return; difficulty = 'easy'; updateDifficultyButtons(); playSound('move');});
+    mediumBtn.addEventListener('click', () => { if (difficulty === 'medium') return; difficulty = 'medium'; updateDifficultyButtons(); playSound('move'); });
+    hardBtn.addEventListener('click', () => { if (difficulty === 'hard') return; difficulty = 'hard'; updateDifficultyButtons(); playSound('move');});
+
+    themeToggle.addEventListener('click', toggleTheme);
+    soundToggle.addEventListener('click', toggleSound);
+    changeSymbolsBtn.addEventListener('click', changeSymbols);
+
+    cells.forEach(cell => {
+        cell.setAttribute('tabindex', '0');
+        cell.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                // Manually trigger the click handler logic for the cell
+                // Ensure 'e.currentTarget' is correctly simulated or passed if needed by handleCellClick
+                // A direct call to handleCellClick might be tricky if it heavily relies on event properties not present here.
+                // Simpler: just click the cell.
+                e.currentTarget.click();
+            }
+        });
+    });
+
+    document.addEventListener('dblclick', function(e) {
+        e.preventDefault();
+    }, { passive: false }); // Added passive:false for explicitness, though default usually works
+});
+</script>
+</body>
+</html>
