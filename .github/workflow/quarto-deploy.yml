@@ -1,0 +1,37 @@
+name: ignacio.martinez.fyi
+
+on:
+  push:
+    branches:
+      - main  # Or your default branch
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to push to gh-pages branch
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # --- START: Added R Setup ---
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release' # Or specify a particular R version like '4.3.2'
+      # --- END: Added R Setup ---
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        # You can specify a Quarto version if needed:
+        # with:
+        #   version: "1.4" # Or "pre-release"
+
+      - name: Publish to GitHub Pages
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages # Specifies publishing to the gh-pages branch
+          # path: "." # Optional: path to the Quarto project, defaults to root
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for publishing
