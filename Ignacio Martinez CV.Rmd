@@ -1,0 +1,152 @@
+---
+title: "CV"
+author: "Ignacio Martinez, PhD"
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    template: "svm-latex-cv.tex"
+geometry: margin=1in
+jobtitle: Head of Impact Measurement @YouTube
+fontawesome: yes
+email: ignacio@martinez.fyi
+phone: 434 260 1819
+web: ignacio.martinez.fyi
+updated: yes
+auth: 'Immigration status: US Citizen'
+keywords: Data Science, Economics, Causal Inference, Ignacio Martinez
+fontfamily: mathpazo
+fontfamilyoptions: sc, osf
+fontsize: 11pt
+linkcolor: black
+urlcolor: black
+spacing: single
+---
+
+# Summary
+
+Head of Impact Measurement at YouTube with a proven track record of leading teams of data scientists to design and execute rigorous impact studies. Expertise in causal inference, advanced data analytics, and econometrics. Experienced in translating complex data findings into actionable insights for executive decision-makers. Strong management philosophy focused on building community, developing people, and delivering business results.
+
+# Skills
+
+**Statistical Methods:** Causal Inference, Experiment Design, Bayesian Statistics, Predictive Modeling, Forecasting
+
+**Leadership & Communication:** Team Management, Technical Mentorship, Executive Communication, Cross-functional Collaboration
+
+# Experience
+
+## YouTube \hfill Head of Impact Measurement, Business Org \hfill 2023-
+
+* Led a team of data scientists to design and execute rigorous impact and program improvement studies, directly informing business strategy for YouTube.
+* Established and oversaw YouTube's data-driven decision clearinghouse, reviewing and summarizing complex studies into clear, actionable language for executives.
+* Managed the full lifecycle of impact measurement projects, from problem framing and research design to study implementation, analysis, and communication of results.
+
+## Google \hfill Staff Economist and Manager \hfill 2021-2023
+
+* Reported to the Chief Economist, applying causal inference and econometrics to solve complex business problems for decision-makers across the company.
+* Spearheaded the development of a tiered system for the Incrementality Council, standardizing the rigor of measurement studies across diverse teams.
+* Provided technical leadership and mentorship to colleagues, improving their analytical skills and fostering a culture of data-driven decision-making.
+
+## Google \hfill Senior Economist \hfill 2019-2021
+
+* Conducted incrementality and forecasting studies to measure the business impact of product and marketing initiatives.
+* Collaborated with cross-functional teams (product, marketing, engineering) to translate business questions into researchable hypotheses.
+* Communicated complex analytical results to both technical and non-technical audiences.
+
+## Mathematica Policy Research \hfill Researcher \hfill 2015-2019
+
+* Led diverse research teams on projects for government and philanthropic clients in education and health policy.
+* Developed and rolled out the "Rapid Cycle Evaluation Coach," an innovative tool for data-driven decision-making.
+* Used machine learning to build and validate a predictive model for school enrollment demand in Washington D.C., and created a user-friendly dashboard for clients to run simulations.
+* Applied Bayesian statistics and high-performance computing to answer key research questions.
+
+## University of Virginia \hfill Research Associate, Curry School of Education \hfill 2014-2015
+
+* Conducted data scraping, estimated econometric models with administrative data, and designed interfaces for a randomized control trial.
+* Taught Principles of Microeconomics as an Instructor (2012-2015).
+* Served as a Teaching Assistant for a range of Economics courses (2008-2011).
+
+# Education
+
+* **Ph.D. Economics**, University of Virginia \hfill 2014
+* **M.A. Economics**, University of Virginia \hfill 2010
+* **Lic. Economics**, Universidad Nacional de Tucumán \hfill 2008
+
+# Papers and Publications
+
+Wang, M., **Martinez, I.**, & Hahn, P. R. (2024). LongBet: Heterogeneous Treatment Effect Estimation in Panel Data. *arXiv preprint arXiv:2406.02530*.
+
+**Martinez, I.** (2022). The Latino Economist: "Ignacio Martinez Speaks on Data's Behalf." *https://hispanicexecutive.com/ignacio-martinez-google/*
+
+**Martinez, I.**, & Vives-i-Bastida, J. (2022). Bayesian and Frequentist Inference for Synthetic Controls. *arXiv preprint arXiv:2206.01779*.
+
+Ben-Shalom, Y., **Martinez, I.**, & Finucane, M. M. (2021). Risk of Workforce Exit due to Disability: State Differences in 2003–2016. *Journal of Survey Statistics and Methodology, 9*(2), 209-230.
+
+Zurovac, Jelena, Michael Barna, Joseph Zickafoose, Mariel Finucane, Angela Merrill, Ning Fu, Lauren Vollmer, **Ignacio Martinez**, Heather Dahlen, Svetlana Bronnikov, Dean Miller, and John McCauley. (2019). "Impact Evaluation of the Transforming Clinical Practice Initiative: Interim Findings for Medicare" Report submitted to the Centers for Medicare & Medicaid Services. Washington, DC: Mathematica Policy Research, September 27, 2019.
+
+Chandler, J. J., **Martinez, I.**, Finucane, M. M., Terziev, J. G., & Resch, A. M. (2020). "Speaking on data's behalf: What researchers say and how audiences choose." *Evaluation Review, 44*(4), 325-353.
+
+Zurovac, Jelena, Michael Barna, Mariel Finucane, Ning Fu, Dean Miller, **Ignacio Martinez**, Joseph Zickafoose, Angela Merrill, Lauren Vollmer, Svetlana Bronnikov, Joli Holmes, and John McCauley. (2018). "The Transforming Clinical Practice Initiative Impact Evaluation: Interim Findings." Report submitted to the Centers for Medicare & Medicaid Services. Washington, DC: Mathematica Policy Research, October 22, 2018.
+
+Finucane, Mariel, **Ignacio Martinez**, and Scott Cody. (2018). "What Works for Whom? A Bayesian Approach to Channeling Big Data Streams for Public Program Evaluation." *American Journal of Evaluation, 39*(1), 109-122.
+
+Chojnacki, Greg, Alex Resch, Alma Vigil, **Ignacio Martinez**, and Steve Bates. (2016). "Understanding Types of Evidence: A Guide for Educators." Washington, DC: Mathematica Policy Research.
+
+**Martinez, I.**, and Paul Diver. (2015). "MOOCs as a Massive Research Laboratory: Opportunities and Challenges." *Distance Education, 36*(1), 5-25.
+
+**Martinez, I.**, and Sarah Turner. (2015). "The Productivity of Pell Grant Spending: Enrollment versus Attainment." *Change: The Magazine of Higher Learning, 47*(5), 55-62.
+
+**Martinez, I.** (2014). "The Hawthorne Effect in MOOCs." Working paper. Charlottesville, VA.
+
+**Martinez, I.**, Louis Bloomfield, and Sarah Turner. (2014). "Massive Open Online Courses (MOOCs) as a Brick-and-Mortar Complement." Working paper. Charlottesville, VA: University of Virginia.
+
+**Martinez, I.** (2013). "The Effects of Informational Nudges on Students' Effort and Performance: Lessons from a MOOC." Working paper. Charlottesville, VA: University of Virginia, Curry School of Education.
+
+# Presentations
+
+**Martinez, I.** (2025). "Why Bayes? A Decisions First Framework for Business Data Science" JSM 2025.
+
+**Martinez, I.** (2021). "Data-driven decision-making at Google." Statfoo 2021.
+
+**Martinez, I.** (2020). "Bayesian Additive Regression Trees (BART) for Causal Inference." Statfoo 2020.
+
+**Martinez, I.** (2020). "Asking one question and answering another: when decisions and statistical analysis are not aligned." StanCon 2020.
+
+**Martinez, I.** (2018). "The Ed Tech Rapid Cycle Evaluation Coach: Turning Evidence into Action." Presentation at APPAM, Washington, DC, November 8, 2018.
+
+**Martinez, I.** (2018). "Predictive Analytics and Early Warning Systems for End of Year Academic Performance." Presentation at the 9th DC Data Summit, Washington, DC, July 12, 2018.
+
+**Martinez, I.**, Alex Resch, and Mikia Manley. (2018). "Actionable Evidence: Using the Rapid Cycle Evaluation Coach to Support Education Decision Making." Presentation at the Maryland Connections Summit 2018, Towson, MD, June 6, 2018.
+
+**Martinez, I.** (2018). "School Enrollment Demand Simulator: Helping Policymakers Predict the Effects of School Choice Policies on Student Sorting." Presentation at The Forum @DC, Washington, DC, February 27, 2018.
+
+**Martinez, I.** (2017). "Using the Rapid Cycle Evaluation for Ed Tech Toolkit to Evaluate What Works in Your Schools." Presentation at the AEA Evaluation 2017, Washington, DC, November 8, 2017; and the iNACOL Symposium 2017, Orlando, FL, October 24, 2017.
+
+**Martinez, I.** (2017). "Rapid Cycle Technology Evaluation Coach." Presentation at the Large District Fly-In, Washington, DC, May 10, 2017; and the Changing Education Together 2017 Conference, Barcelona, Spain, March 1, 2017.
+
+**Martinez, I.** (2016). "Evaluation of Nearpod in Springdale Public Schools." Presentation at the American Educational Research Association 2016 Annual Meeting, Washington, DC, April 11, 2016.
+
+**Martinez, I.** (2016). "Never Put Off Till Tomorrow?" Presentation at the Association for Education Finance and Policy 41st Annual Conference, Denver, March 18, 2016; and the Bankard Applied Microeconomics Workshop, Charlottesville, VA, September 2014.
+
+**Martinez, I.** (2014). "MOOCs: Opportunities and Challenges." Presentation at the Partners' Conference, Recent Research Panel, London, March 2014; and the GABFest, Charlottesville, VA, November 2013.
+
+**Martinez, I.** (2014). "Reasoning, Logic, and Decision Making." Presentation at the Huskey Research Exhibition, Charlottesville, VA, March 2014.
+
+**Martinez, I.** (2013). "Lessons from a MOOC." Presentation at EdPolicyWorks, The Center on Education Policy and Workforce Competitiveness, Charlottesville, VA, December 2013.
+
+# Honors and Awards
+
+Google's Renaissance Innovation Award \hfill 2021
+
+Mathematica's Bright Star Award \hfill 2016
+
+Robert J. Huskey Travel Fellowship, University of Virginia \hfill 2014
+
+Parents Committee Grant, University of Virginia \hfill 2013
+
+Big Data Initiative Award sponsored by the Jefferson Trust and the Vice President for Research \hfill 2013
+
+Bankard Pre-doctoral Fellowship, University of Virginia \hfill 2012-2013
+
+Snavely Prize for Outstanding Dissertation Proposal, University of Virginia \hfill 2012
+
+Department of Economics Graduate Fellowship, University of Virginia \hfill 2008-2012
