@@ -14,6 +14,10 @@ website:
         text: Book
         href: https://book.martinez.fyi
         target: _blank
+      - icon: robot
+        text: Iggy
+        href: https://iggy.martinez.fyi
+        target: _blank        
       - icon: file-earmark-person
         text: CV
         href: Ignacio-Martinez-CV.pdf
