@@ -22,6 +22,10 @@ jobs:
           r-version: 'release' # Or specify a particular R version like '4.3.2'
       # --- END: Added R Setup ---
 
+      - name: Install R packages
+        run: install.packages(c("rmarkdown", "knitr"))
+        shell: Rscript {0}
+
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         # You can specify a Quarto version if needed:
