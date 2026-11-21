@@ -73,6 +73,8 @@ Head of Impact Measurement at YouTube with a proven track record of leading team
 
 # Papers and Publications
 
+Zhang, Y., & **Martinez, I.** (2026). Quantifying and Correcting Measurement Error in LLM-Generated Classifications: A Beta-Binomial Latent Class Model for Correlated Repeated Judgments. *arXiv preprint arXiv:2510.23874*.
+
 Wang, M., **Martinez, I.**, & Hahn, P. R. (2024). LongBet: Heterogeneous Treatment Effect Estimation in Panel Data. *arXiv preprint arXiv:2406.02530*.
 
 **Martinez, I.** (2022). The Latino Economist: "Ignacio Martinez Speaks on Data's Behalf." *https://hispanicexecutive.com/ignacio-martinez-google/*
