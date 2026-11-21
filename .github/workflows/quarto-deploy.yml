@@ -21,11 +21,25 @@ jobs:
         with:
           r-version: 'release' # Or specify a particular R version like '4.3.2'
       # --- END: Added R Setup ---
-
+      - name: Set up Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+      - name: Set up TinyTeX
+        uses: r-lib/actions/setup-tinytex@v2
       - name: Install R packages
-        run: install.packages(c("rmarkdown", "knitr"))
+        run: install.packages(c("rmarkdown", "knitr", "tinytex")))
         shell: Rscript {0}
-
+      - name: Render CV PDF
+        run: rmarkdown::render("Ignacio Martinez CV.Rmd", output_file = "Ignacio-Martinez-CV.pdf")
+        shell: Rscript {0}
+      - name: Commit and push updated CV PDF
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Ignacio-Martinez-CV.pdf
+          if ! git diff --staged --quiet; then
+            git commit -m "Update Ignacio-Martinez-CV.pdf [skip ci]"
+            git push origin HEAD:main
+          fi
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         # You can specify a Quarto version if needed:
