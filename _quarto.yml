@@ -10,6 +10,7 @@ website:
   open-graph: true
   twitter-card: true
   navbar:
+    border: true
     left:
       - href: index.qmd
         text: Home
@@ -26,16 +27,43 @@ website:
         text: CV
         href: Ignacio-Martinez-CV.pdf
         target: _blank
-      - text: "{{< ai google-scholar >}} Google Scholar"
+    right:
+      - text: "{{< ai google-scholar >}}"
+        aria-label: Google Scholar
         href: https://scholar.google.com/citations?user=Kq8kZToAAAAJ
-        target: _blank        
+        target: _blank
+      - icon: github
+        aria-label: GitHub
+        href: https://github.com/ignacio82
+        target: _blank
+      - icon: linkedin
+        aria-label: LinkedIn
+        href: https://www.linkedin.com/in/ignacio82/
+        target: _blank
+      - icon: mastodon
+        aria-label: Mastodon
+        href: https://mastodon.social/@ignacio
+        target: _blank
+  page-footer:
+    border: true
+    left: "© Ignacio Martinez, PhD"
+    right:
+      - text: "ignacio@martinez.fyi"
+        href: mailto:ignacio@martinez.fyi
+     
 format:
   html:
-    theme: cosmo
+    theme:
+      light: flatly
+      dark: darkly
     css: styles.css
     toc: true
     include-in-header:
       text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@500;600&display=swap" rel="stylesheet">
         <script defer src="https://umami.martinez.fyi/script.js" data-website-id="0805cacb-45a2-4531-8e52-728ba246c576"></script>
         <link rel="me" href="https://mastodon.social/@ignacio">
 editor: visual
