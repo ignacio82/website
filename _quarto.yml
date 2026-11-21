@@ -5,6 +5,9 @@ project:
 website:
   title: "Dr. Ignacio Martinez"
   favicon: img/favicon.png
+  site-url: https://ignacio.martinez.fyi
+  open-graph: true
+  twitter-card: true
   navbar:
     left:
       - href: index.qmd
@@ -33,6 +36,7 @@ format:
     include-in-header:
       text: |
         <script defer src="https://umami.martinez.fyi/script.js" data-website-id="0805cacb-45a2-4531-8e52-728ba246c576"></script>
+        <link rel="me" href="https://mastodon.social/@ignacio">
 editor: visual
 
 resources:
