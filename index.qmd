@@ -12,7 +12,7 @@ page-layout: full
 about:
   id: hero-heading
   template: trestles
-  image-width: 70%
+  image-width: 15em
   links:
     - icon: envelope
       text: E-mail
@@ -29,8 +29,7 @@ about:
       text: GitHub
       href: https://github.com/ignacio82
       target: _blank
-subtitle: | 
-    **Citizenship:** {{< iconify emojione-v1:flag-for-argentina >}} {{< iconify emojione-v1:flag-for-united-states >}}
+subtitle: "Head of Impact Measurement at YouTube · PhD Economist"
 
 ---
 
@@ -38,4 +37,12 @@ subtitle: |
 
 :::{#hero-heading}
 
-I'm Ignacio, and I lead impact measurement at YouTube. I'm passionate about using data to drive informed business decisions and contribute to YouTube's success. I earned my PhD in Economics from the University of Virginia, and prior to joining Google in 2019, I was a researcher at Mathematica.org where I helped policymakers use data to inform decisions related to education and health policy. My journey at Google began on the Chief Economist's team. Now at YouTube, I lead a team tasked with driving critical business decisions by measuring the impact of the YouTube Biz Org's programs and activities.
+I lead impact measurement for YouTube's Business Organization, guiding a team of data scientists who help executives make rigorous, data-driven decisions about YouTube's programs and strategy.
+
+My journey at Google began in 2019 on the Chief Economist's team. Before joining Google, I earned my PhD in Economics from the University of Virginia and worked as a researcher at [Mathematica](https://www.mathematica.org/){target="_blank"}, helping policymakers use evidence to inform education and health policy.
+
+- **Focus areas:** Causal inference, Bayesian statistics, experiment design, and econometric modeling.
+- **Writing & tools:** Author of [*Business Data Science*](https://book.martinez.fyi){target="_blank"} and creator of [Iggy](https://iggy.martinez.fyi){target="_blank"}.
+- **Citizenship:** <span aria-label="Argentina" title="Argentina">{{< iconify emojione-v1:flag-for-argentina >}}</span> Argentina & <span aria-label="United States" title="United States">{{< iconify emojione-v1:flag-for-united-states >}}</span> United States
+
+:::
